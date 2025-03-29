@@ -1,0 +1,6 @@
+Models :
+    1. User : firstName / lastName / contactNo / additionalDetails / createdAt / password / email / image / accountType / Project 
+
+Functionality :
+    1) User : Login / SignUp / changePassword / resetPassword / profile
+    2) Admin: 

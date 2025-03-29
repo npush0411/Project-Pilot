@@ -38,6 +38,15 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum: ["Admin", "Student", "Instructor"],
         required: true
+    },
+    projects:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"Project"
+        }
+    ],
+    teamLead:{
+        type:Boolean
     }
 });
 
