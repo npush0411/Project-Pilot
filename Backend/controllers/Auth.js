@@ -26,7 +26,6 @@ exports.sendOTP = async (req, res) => {
                 message: "User Already Exists !!"
             });
         }
-
         //generate OTP
         var otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
@@ -71,7 +70,15 @@ exports.sendOTP = async (req, res) => {
 exports.signUp = async (req, res) => {
     try{
         //data fetch from req
-        const {firstName, lastName, email, password, cPassword, accountType, contactNumber, otp} = req.body;
+        const {firstName,
+             lastName, 
+             email, 
+             password, 
+             cPassword, 
+             accountType, 
+             contactNumber, 
+             otp
+            } = req.body;
 
         //validate data
         if(!firstName || !email || !lastName || !cPassword || !password || !otp)
@@ -163,10 +170,10 @@ exports.signUp = async (req, res) => {
 //Login
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { userID, password } = req.body;
 
         // Validate input
-        if (!email || !password) {
+        if (!userID || !password) {
             return res.status(400).json({
                 success: false,
                 message: "Please fill all the details !!",
@@ -174,7 +181,7 @@ exports.login = async (req, res) => {
         }
 
         // Check if the user exists
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ userID });
         if (!user) {
             return res.status(400).json({
                 success: false,

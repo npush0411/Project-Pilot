@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 const prjSchema = new mongoose.Schema({
     title:{
         type: String,
-        required: true
+        required: trueZ
+    },
+    ID:{
+        type:Number,
+        required:true
     },
     description:{
         type:String,
