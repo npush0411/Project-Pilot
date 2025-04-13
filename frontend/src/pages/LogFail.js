@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './loginFailed.css';
-import logo from '../assets/image.png'; // adjust the path as needed
+import './css/loginFailed.css';
+import logo from '../images/logo.png';
+// adjust the path as needed
 
 function LoginFailed() {
   const navigate = useNavigate();

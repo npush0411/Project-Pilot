@@ -1,12 +1,12 @@
-import logo from './logo.svg';
-import './App.css';
-import Landing from './pages/landing';
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/routes'; // your route configuration
 
 function App() {
   return (
-    <div> 
-      <Landing/>
-    </div>
+   
+      <AppRoutes />
+   
   );
 }
 

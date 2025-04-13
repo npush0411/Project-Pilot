@@ -68,104 +68,64 @@ exports.sendOTP = async (req, res) => {
 
 //SignUp
 exports.signUp = async (req, res) => {
-    try{
-        //data fetch from req
-        const {firstName,
-             lastName, 
-             email, 
-             password, 
-             cPassword, 
-             accountType, 
-             contactNumber, 
-             otp
-            } = req.body;
+    try {
+        const { firstName, lastName, email, password, cPassword, accountType, contactNumber, userID } = req.body;
 
-        //validate data
-        if(!firstName || !email || !lastName || !cPassword || !password || !otp)
-        {
-            return res.status(403).json({
-                success:false,
-                message:"All details are required !!"
-            });
+        if (!firstName || !lastName || !email || !password || !cPassword || !accountType || !contactNumber || !userID) {
+            return res.status(400).json({ success: false, message: "All fields are required!" });
         }
 
-        //match both passwords
-        if(password !== cPassword)
-        {
-            return res.status(400).json({
-                success:false,
-                message:"Password and Confirmed Password must match !"
-            });
+        if (password !== cPassword) {
+            return res.status(400).json({ success: false, message: "Passwords do not match!" });
         }
 
-        //user existance
-        const exist = await User.findOne({email});
-        if(exist){
-            return res.status(400).json({
-                success:false,
-                message:"User is already registered !!"
-            });
+        const exist = await User.findOne({ userID });
+        if (exist) {
+            return res.status(409).json({ success: false, message: "User ID already taken!" });
         }
 
-        //find most recent OTP for the user
-        const recentOTP = await OTP.find({email}).sort({createdAt:-1}).limit(1);
-        console.log("Recent OPT : ", recentOTP);
-
-        //validate OTP
-        if(recentOTP.length == 0) 
-        {
-            //OTP not found
-            return res.status(400).json({
-                success:false,
-                message:"OTP didn't found / Length not valid !!"
-            });
-        }
-        else if(otp !== recentOTP[0].otp) //check weather they're equal
-        {
-            //Invalid OTP
-            return res.status(400).json({
-                success:false,
-                message:"OTPs didn't match properly !!"
-            });
-        }
-
-        //Hash Password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        //Create Additional details profile !! 
         const profile = await Profile.create({
-            gender:null,
-            about:null,
-            dateOfBirth:null,
-            contactNo:null,
+            gender: null,
+            about: null,
+            dateOfBirth: null,
+            contactNo: null,
+        });
+        const eotp = otpGenerator.generate(6, {
+            upperCaseAlphabets:true,
+            lowerCaseAlphabets:false,
+            specialChars:false
+        });
+        const motp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets:true,
+            specialChars:true
         });
 
-        //create entry in DB 
         const user = await User.create({
             firstName,
             lastName,
-            password:hashedPassword,
-            accountType,
             email,
+            userID,
+            password: hashedPassword,
+            accountType,
             contactNumber,
-            additionalDetail: profile.id,
-            image:`https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`
+            additionalDetail: profile._id,
+            image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`
         });
 
-        //return res !! 
         return res.status(200).json({
-            success:true,
-            message:"User is Registered Successfully",
-            user
-        })
-    }catch(error) {
-        console.log("Error in User creation");
-        return res.status(500).json({
-            success:false,
-            message:"User can't be registerd please try again !!"
-        })
+            success: true,
+            message: "User registered successfully!",
+            user,
+        });
+
+    } catch (err) {
+        console.error("Error during signup:", err);
+        return res.status(500).json({ success: false, message: "Internal server error!" });
     }
-}
+};
 
 //Login
 exports.login = async (req, res) => {
@@ -200,7 +160,7 @@ exports.login = async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, role: user.role },
+            { userId: user._id, role: user.accountType },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -213,7 +173,7 @@ exports.login = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
+                role: user.accountType,
             },
         });
     } catch (error) {
@@ -275,5 +235,37 @@ exports.changePassword = async (req, res) => {
             success: false,
             message: "Something went wrong !!",
         });
+    }
+};
+
+
+exports.verifyOTP = async (req, res) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ success: false, message: "No token found" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+        const { eotp, motp } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const recentOTP = await OTP.findOne({ email: user.email }).sort({ createdAt: -1 });
+        if (!recentOTP) return res.status(400).json({ success: false, message: "No OTP found" });
+
+        if (recentOTP.eotp !== eotp || recentOTP.motp !== motp) {
+            return res.status(400).json({ success: false, message: "Invalid OTPs" });
+        }
+
+        user.isVerified = true;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "User verified successfully" });
+
+    } catch (err) {
+        return res.status(500).json({ success: false, message: "Error verifying OTP" });
     }
 };

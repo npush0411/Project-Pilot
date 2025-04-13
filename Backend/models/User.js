@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
     },
     accountType:{
         type:String,
-        enum: ["Admin", "Student", "Instructor"],
+        enum: ["Admin", "Student", "Instructor", "Manager"],
         required: true
     },
     projects:[
@@ -51,7 +51,15 @@ const userSchema = new mongoose.Schema({
     ],
     teamLead:{
         type:Boolean
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    otp:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"OTP"
     }
 });
 
-module.exports = mongoose.Schema("User", userSchema);
+module.exports = mongoose.model("User", userSchema);
