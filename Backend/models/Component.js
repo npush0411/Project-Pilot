@@ -4,16 +4,33 @@ const comSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    cID:{
+        type:String,
+        required:true
+    },
     description:{
         type:String,
         trim: true
     },
-    price:{
+    qnty:{
         type:Number,
+        required:true,
+        default:0
+    },
+    price:{
+        type:String,
         required:true
     },
     minPurchace:{
         type:Number,
+    },
+    loc:{
+        type:String
+    },
+    available:{
+        type:Boolean,
+        required:true,
+        default:false
     },
     createdAt:{
         type:Date,
@@ -22,4 +39,4 @@ const comSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.Schema("Component", comSchema);
+module.exports = mongoose.model("Component", comSchema);
