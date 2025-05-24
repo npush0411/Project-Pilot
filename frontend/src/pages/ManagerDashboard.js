@@ -5,6 +5,7 @@
   import { FiSearch } from 'react-icons/fi';
   import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
   import axios from 'axios';
+import Footer from '../components/Footer';
 
   const ManagerDashboard = () => {
     const navigate = useNavigate();
@@ -271,9 +272,7 @@
 
         
     {/* Footer */}
-    <footer className="dashboard-footer">
-      © 2025 Walchand College of Engineering, Sangli. All rights reserved.
-    </footer>
+    <Footer/>
   </div>
   );
 };

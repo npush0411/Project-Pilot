@@ -1,39 +1,42 @@
 const mongoose = require('mongoose');
+
 const prjSchema = new mongoose.Schema({
-    title:{
+    title: {
         type: String,
-        required: trueZ
+        required: true
     },
-    ID:{
-        type:Number,
-        required:true
+    ID: {
+        type: String,              // Using String for alphanumeric OTP
+        required: true,
+        unique: true               // Ensures uniqueness at DB level
     },
-    description:{
-        type:String,
+    description: {
+        type: String,
         trim: true
     },
-    components:[
+    components: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Component"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Component"
         }
     ],
-    team:[
+    team: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
         }
     ],
-    createdAt:{
-        type:Date,
-        required:true,
-        default:Date.now()
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now           // Use function, not Date.now()
     },
-    projectGuide:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+    projectGuide: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     }
-})
+});
 
-module.exports = mongoose.Schema("Project", prjSchema);
+// ✅ Correct export using mongoose.model()
+module.exports = mongoose.model("Project", prjSchema);

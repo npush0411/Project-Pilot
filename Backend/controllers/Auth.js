@@ -4,6 +4,7 @@ const OTP = require('../models/OTP');
 const Profile = require('../models/Profile')
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Controls = require('../models/Controls');
 
 // Three Functions are there in this file 
 //     1-> sendOTP() => to send the otp
@@ -15,12 +16,12 @@ exports.sendOTP = async (req, res) => {
     try{
         //fetch email from req body
         const {email} = req.body;
-
+ 
         //check user existence
         const checkUserPresent = await User.findOne({email});
         //if user exist then return response
         if(checkUserPresent)
-        {
+        {5
             return res.status(401).json({
                 success: false,
                 message: "User Already Exists !!"
@@ -78,6 +79,15 @@ exports.signUp = async (req, res) => {
         if (password !== cPassword) {
             return res.status(400).json({ success: false, message: "Passwords do not match!" });
         }
+
+        // const permission = await Controls.find({});
+        // if(!permission.createUser)
+        // {
+        //     return res.status(400).json({
+        //         success:false,
+        //         message:"User Creation is not Permitted ! Please Contact Admin !"
+        //     });
+        // }
 
         const exist = await User.findOne({ userID });
         if (exist) {

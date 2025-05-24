@@ -3,6 +3,7 @@ import logo from '../images/logo.png';
 import './css/CreateProject.css';
 import { useNavigate } from 'react-router-dom';
 
+ 
 function CreateProject() {
   const navigate = useNavigate();
 
@@ -58,7 +59,7 @@ function CreateProject() {
       }
     }
   };
-
+  
   const handleAddTeam = (e) => {
     if (e.key === 'Enter' && teamInput) {
       e.preventDefault();
@@ -75,42 +76,71 @@ function CreateProject() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const projectData = {
-        ...formData,
-        components: formData.components,
-        team: formData.team
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const projectData = {
+      ...formData,
+      components: formData.components,
+      team: formData.team
+    };
 
-      const response = await fetch("http://localhost:4000/api/v1/projects", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(projectData),
-      });
+    const response = await fetch("http://localhost:4000/api/v1/create-project", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(projectData),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (response.ok) {
-        navigate('/project-success');
-      } else {
-        navigate('/project-fail');
-      }
-    } catch (err) {
-      setError('Something went wrong!');
+    if (response.ok) {
+      navigate('/project-success');
+    } else {
+      // Pass error message to fail page
+      navigate('/project-fail', { state: { message: result.message || 'Project creation failed.' } });
     }
-  };
+  } catch (err) {
+    setError('Something went wrong!');
+    navigate('/project-fail', { state: { message: 'Something went wrong!' } });
+  }
+};
 
-  const componentExists = (componentId) => {
-    const existingComponents = ['65123f...', '65124g...', '65125h...'];
-    return existingComponents.includes(componentId);
-  };
+  const componentExists = async (componentCId) => {
+  try {
+    const res = await fetch("http://localhost:4000/api/v1/get-all-components", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-  const userExists = (userId) => {
-    const registeredUsers = ['usr001', 'usr002', 'usr003'];
-    return registeredUsers.includes(userId);
-  };
+    const result = await res.json(); // Wait for parsed JSON
+    const existingComponentCIDs = result.data.map(component => component.cID); // Extract cIDs
+    console.log("Available Component cIDs:", existingComponentCIDs);
+
+    return existingComponentCIDs.includes(componentCId);
+  } catch (error) {
+    console.error("Error fetching components:", error);
+    return false;
+  }
+};
+
+ const userExists = async (userId) => {
+  try {
+    const res = await fetch("http://localhost:4000/api/v1/get-all-users", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const result = await res.json(); // Wait for parsed response
+    const registeredUserIDs = result.data.map(user => user.userID); // Extract userIDs
+    console.log("Registered User IDs:", registeredUserIDs);
+
+    return registeredUserIDs.includes(userId);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return false;
+  }
+};
+
 
   const handleCreateNewComponent = async () => {
     if (newComponentName && newComponentDescription) {
@@ -138,18 +168,6 @@ function CreateProject() {
       }
     }
   };
-  var componentList = [];
-  const getComponent = async () => {
-    try{
-      const res = await fetch("http://localhost:4000/api/v1/get-components", {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      componentList = res.body;
-    }catch(error){  
-
-    }
-  }
 
   return (
     <div className='create-project-container'>
@@ -184,7 +202,7 @@ function CreateProject() {
             value={componentInput}
             onChange={handleComponentChange}
             onKeyDown={handleAddComponent}
-            placeholder='e.g. 65123f...'
+            placeholder='e.g. COM1...'
           />
           <ul>
             {formData.components.map((id, index) => (
@@ -221,10 +239,8 @@ function CreateProject() {
           <button type='button' className='cancel-button' onClick={() => navigate('/user-dashboard')}>Cancel</button>
         </div>
       </form>
-
-      <footer className='create-project-footer'>
-        © 2025 Walchand College of Engineering, Sangli. All rights reserved.
-      </footer>
+      
+      
 
       {showSideForm && (
         <div className='side-form'>

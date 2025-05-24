@@ -13,6 +13,9 @@ import UnderConstruction from '../pages/UnderConstruction';
 import CreateProject from '../pages/CreateProject';
 import ManagerDashboard from '../pages/ManagerDashboard';
 import InstructorDashboard from '../pages/InstructorDashboard';
+import ManControls from '../pages/ManControls';
+import FailurePage from '../pages/FailurePage';
+import SuccessPage from '../pages/SuccessPage';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -37,9 +40,11 @@ const AppRoutes = () => {
       <Route path='/instructor-dashboard' element={<InstructorDashboard/>}/>
       //Under Construction pages
       <Route path="/create-project" element={<CreateProject/>}/>
+      <Route path="/project-fail" element={<FailurePage/>}/>
+      <Route path="/project-success" element={<SuccessPage/>}/>
       <Route path="/projects" element={<UnderConstruction/>}/>
       <Route path="/update-project" element={<UnderConstruction/>}/>
-
+      <Route path="/man-controls" element={<ManControls/>}/>
       //Undefined Page
       <Route path="*" element={<PageNotFound/>} />
     </Routes>

@@ -7,12 +7,13 @@ const userSchema = new mongoose.Schema({
     },
     userID:{
         type:Number,
-        required:true
+        required:true,
+        unique:true
     },
     lastName:{
         type:String,
         required:true
-    },
+    },      
     contactNumber:{
         type:String,
         required:true
