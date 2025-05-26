@@ -1,0 +1,40 @@
+.projects-associated-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header Styling */
+.projects-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  background-color: #003366;
+  color: white;
+  padding: 0 20px;
+  position: relative;
+}
+
+.navbar-logo img {
+  height: 50px;
+}
+
+.navbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+/* Footer Styling */
+.projects-footer {
+  margin-top: auto;
+  background-color: #f1f1f1;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 0.9rem;
+  color: #333;
+  border-top: 1px solid #ccc;
+}

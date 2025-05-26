@@ -1,15 +1,18 @@
 import React from 'react';
+import './css/Header.css';
 import logo from '../images/logo.png';
 
-function Header() {
+const Header = ({ title }) => {
   return (
-    <header className='create-project-header'>
-      <img src={logo} alt='Logo' className='create-project-logo' />
-      <h1>Walchand College of Engineering, Sangli</h1>
-      <h2>Department Of Electronics Engineering</h2>
-      <h3>Project Management Tool</h3>
+    <header className="header-navbar">
+      <div className="header-logo">
+        <img src={logo} alt="Logo" />
+      </div>
+      <div className="header-title">
+        <h5>{title}</h5>
+      </div>
     </header>
   );
-}
+};
 
 export default Header;

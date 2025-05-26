@@ -16,6 +16,7 @@ import InstructorDashboard from '../pages/InstructorDashboard';
 import ManControls from '../pages/ManControls';
 import FailurePage from '../pages/FailurePage';
 import SuccessPage from '../pages/SuccessPage';
+import ProjectsAssociated from '../pages/ProjectsAssociated';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -42,7 +43,7 @@ const AppRoutes = () => {
       <Route path="/create-project" element={<CreateProject/>}/>
       <Route path="/project-fail" element={<FailurePage/>}/>
       <Route path="/project-success" element={<SuccessPage/>}/>
-      <Route path="/projects" element={<UnderConstruction/>}/>
+      <Route path="/projects" element={<ProjectsAssociated/>}/>
       <Route path="/update-project" element={<UnderConstruction/>}/>
       <Route path="/man-controls" element={<ManControls/>}/>
       //Undefined Page

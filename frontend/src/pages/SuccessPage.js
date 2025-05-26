@@ -15,7 +15,7 @@ const SuccessPage = () => {
           <div className="icon">&#10004;</div>
           <h2>Project Created Successfully</h2>
           <p>Your project has been created and saved to the system.</p>
-          <button onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
+          <button onClick={() => navigate(-2)}>Go to Dashboard</button>
         </div>
       </div>
       <Footer />
