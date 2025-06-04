@@ -1,34 +1,42 @@
 const express = require('express');
 const router = express.Router();
 
-// Auth controllers
-const { login, signUp, verifyOTP } = require("../controllers/Auth");
+// Middleware
+const { auth, authorizeRole } = require('../middlewares');
 
-//Project Controllers
-const {createProject, getAllProjects, getAllUsers} = require("../controllers/Project");
+// Auth controllers
+const { login, signUp, verifyOTP, getCurrentUser, verifyToken } = require("../controllers/Auth");
+
+// Project Controllers
+const { createProject, getAllProjects, getAllUsers } = require("../controllers/Project");
 
 // Component controllers
-const { getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable } = require("../controllers/Components");
+const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable} = require("../controllers/Components");
+const { createTeam } = require('../controllers/Team');
 
-// Auth Routes
+// --- Auth Routes ---
 router.post("/login", login);
 router.post("/signup", signUp);
 router.post("/verify", verifyOTP);
-router.get("/get-all-users", getAllUsers);
+router.get("/get-all-users",   getAllUsers);
+router.get("/me",auth,  getCurrentUser);
+router.get("/verify-token", verifyToken);
+// --- Component Routes ---
+router.post("/create-component", auth, authorizeRole("Admin", "Instructor"), createComponent);
+router.get("/get-all-components", auth, authorizeRole("Admin", "Instructor", "Student", "Manager"), getAllComponents);
+router.get("/get-component/:cID", auth, getComponent);
+router.delete("/delete-component/:cID", auth, authorizeRole("Admin", "Manager"), deleteComponent);
+router.put("/update-component/:cID", auth, authorizeRole("Admin", "Manager"), updateComponent);
+router.put("/make-available/:cID", auth, authorizeRole("Manager"), makeAvailable);
 
-// Component Routes
-router.post("/create-component", createComponent);
-router.get("/get-all-components", getAllComponents);
-router.get("/get-component/:cID", getComponent);
-router.delete("/delete-component/:cID", deleteComponent);
-router.put("/update-component/:cID", updateComponent); 
-router.put("/make-available/:cID", makeAvailable );
+// --- Team Routes ---
+router.post("/create-team", auth, authorizeRole("Student"), createTeam);
 
-//Project Routes
-router.post("/create-project", createProject);
-router.get("/get-all-projects", getAllComponents);
+// --- Project Routes ---
+router.post("/create-project", auth, authorizeRole("Student"), createProject);
+router.get("/get-all-projects", auth, authorizeRole("Admin", "Manager", "Instructor"), getAllProjects);
 
-//Controls !
-// routes.put("/get-controls", auth, )  
+// Optional: Future Protected Controls
+// router.put("/get-controls", auth, authorizeRole("Instructor"), yourController);
 
 module.exports = router;

@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         required:true
     },      
     contactNumber:{
-        type:String,
+        type:Number,
         required:true
     },
     createdAt:{

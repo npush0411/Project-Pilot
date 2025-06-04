@@ -1,0 +1,113 @@
+.team-creation-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.input-group label {
+  font-weight: bold;
+}
+
+ input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 150px;
+}
+
+.tables-wrapper {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.search-table, .members-table {
+  flex: 1;
+  min-width: 300px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+th, td {
+  padding: 0.6rem;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+select {
+  padding: 0.3rem;
+  border-radius: 4px;
+}
+
+.create-team-btn {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #777;
+}
+
+.test{
+  display: flex;
+  flex-direction: row;
+}
+.test1{
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 150px;
+  height: fit-content;
+  margin: 1rem;
+}
+/* Center buttons inside their table cells */
+.search-table table td,
+.members-table table td {
+  text-align: center;
+  vertical-align: middle; /* optional, to vertically center */
+  horizontal-align:middle;
+}
+
+/* Optional: make buttons inline-block for better centering */
+.search-table table td button,
+.members-table table td button {
+  display: inline-block;
+}

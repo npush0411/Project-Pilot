@@ -1,71 +1,35 @@
-const Controls = require('./models/Controls');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+// Middleware to check if token is valid
+exports.auth = (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization']; // lowercase
+    console.log("Authorization Header:", authHeader);
 
-exports.auth = async (req, res) => {
-    try{
-        const token = req.body.token ;
-        if(!token){
-            return res.status(401).json({
-                success:false,
-                message:"Token Missing !"
-            })
-        }
-        //Verify the token 
-        try{
-            const decode = jwt.verify(token, process.env.JWT_SECRET);
-            console.log(decode);
-            req.user = decode;
-        }catch(error){
-            res.status(401).json({
-                success:false,
-                message:"Token is Invalid !"
-            })
-        }   
-        next();
-    }catch(err){
-        return res.status(401).json({
-            success:false,
-            message:"Kuch to gadbad hai jee verification me !!"
-        })
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: 'Token missing or malformed' });
     }
-}
 
-exports.checkProjectCreationPermission = async (req, res) => {
-    try{
-        const ctrls = Controls.find({});
-        if(!ctrls.createProject)
-        {
-            return res.status(401).json({
-                success:false,
-                message:"Please Contact Admin for permission !"
-            })
-        }
-    }catch(error){
-        console.log(error);
-        return res.status(401).json({
-        success:false,
-        message:"Kuch to gadbad hai jee verification me !!"
-    })}
+    const token = authHeader.split(" ")[1]; // Extract actual token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded; // decoded usually contains userId, role, etc.
     next();
-}
+  } catch (err) {
+    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+  }
+};
 
-exports.checkUserCreationPermission = async (req, res) => {
-    try{
-        const ctrls = Controls.find({});
-        if(!ctrls.createUser)
-        {
-            return res.status(401).json({
-                success:false,
-                message:"Please Contact Admin for permission !"
-            })
-        }
-    }catch(error){
-        console.log(error);
-        return res.status(401).json({
-            success:false,
-            message:"Kuch to gadbad hai jee verification me !!"
-        })
+
+// Middleware to restrict access to specific roles
+exports.authorizeRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied for role: ${req.user.role}`,
+      });
     }
     next();
-}
+  };
+};

@@ -3,6 +3,8 @@ import logo from '../images/logo.png';
 import './css/land.css';
 import { useNavigate } from 'react-router-dom';
 
+
+
 function Landing() {
   const [userID, setuserID] = useState('');
   const [password, setPassword] = useState('');
@@ -11,33 +13,36 @@ function Landing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Prepare data to be sent in request body
-      const bodyData = JSON.stringify({
-        userID,
-        password
-      });
+      const bodyData = JSON.stringify({ userID, password });
 
       const res = await fetch("http://localhost:4000/api/v1/login", {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Ensure Content-Type is correct
+          'Content-Type': 'application/json',
         },
-        body: bodyData, // Pass data here
+        body: bodyData,
       });
 
       const data = await res.json();
-
+      // console.log(data);
       if (res.ok) {
         console.log(data);
         localStorage.setItem('token', data.token);
-        if (data.user.role === 'Admin') {
-          navigate('/admin-dashboard');
-        } else if(data.user.role == 'Manager'){
-          navigate('/manager-dashboard');
-        }else if(data.user.role == 'Instructor'){
-          navigate('/instructor-dashboard');
-        }else{
-          navigate('/user-dashboard');
+        const tokenParam = `?token=${encodeURIComponent(data.token)}`;
+        localStorage.setItem('user', JSON.stringify(data.user));
+        switch (data.user.role) {
+          case 'Admin':
+            navigate(`/admin-dashboard${tokenParam}`);
+            break;
+          case 'Manager':
+            navigate(`/manager-dashboard${tokenParam}`);
+            break;
+          case 'Instructor':
+            navigate(`/instructor-dashboard${tokenParam}`);
+            break;
+          default:
+            navigate(`/student-dashboard${tokenParam}`);
+            break;
         }
       } else {
         console.log('Login failed:', data);
@@ -86,4 +91,5 @@ function Landing() {
     </div>
   );
 }
+
 export default Landing;

@@ -1,0 +1,73 @@
+.topbar {
+  background-color: #140434 ;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+.pnm{
+  
+  font-size: 20px;
+  font-weight: bolder;
+  margin: 0;
+
+}
+
+.spacer{
+  text-align: center;
+}
+
+ button {
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+ button:hover {
+  background-color: #7b787e;
+}
+
+.user-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown-icon {
+  margin-left: 10px;
+  font-size: 0.9rem;
+}
+
+.topbar-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #1a004b;
+  padding: 10px;
+  border: 1px solid white;
+  z-index: 1000;
+  min-width: 150px;
+  display: none;
+}
+
+.user-info:hover .topbar-menu {
+  display: block;
+}
+
+.topbar-menu button {
+  background: none;
+  border: none;
+  color: white;
+  width: 100%;
+  text-align: left;
+  padding: 5px 0;
+}

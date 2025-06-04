@@ -12,6 +12,21 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+/* index.css or App.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+html, body {
+  height: 100%;
+  background-color: #f8f8f8; /* or whatever background you need */
+}
 
 .App-header {
   background-color: #282c34;

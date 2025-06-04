@@ -170,7 +170,7 @@ exports.login = async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, role: user.accountType },
+            { userId: user._id, role: user.accountType, name: `${user.firstName} ${user.lastName}` },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -278,4 +278,41 @@ exports.verifyOTP = async (req, res) => {
     } catch (err) {
         return res.status(500).json({ success: false, message: "Error verifying OTP" });
     }
+};
+
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized: User ID not found in token' });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ success:true, data:{ID:user.userID, name: `${user.firstName} ${user.lastName}`} });
+  } catch (error) {
+    console.error("getCurrentUser error:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.verifyToken = (req, res) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ valid: false, message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ valid: true, user: decoded });
+  } catch (error) {
+    res.status(401).json({ valid: false, message: 'Invalid or expired token' });
+  }
 };
