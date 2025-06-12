@@ -3,7 +3,7 @@ import logo from '../images/logo.png';
 import './css/land.css';
 import { useNavigate } from 'react-router-dom';
 
-
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Landing() {
   const [userID, setuserID] = useState('');
@@ -15,7 +15,7 @@ function Landing() {
     try {
       const bodyData = JSON.stringify({ userID, password });
 
-      const res = await fetch("http://localhost:4000/api/v1/login", {
+      const res = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

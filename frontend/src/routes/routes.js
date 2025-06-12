@@ -19,6 +19,8 @@ import ProjectsAssociated from '../pages/ProjectsAssociated';
 import PrivateRoutes from './PrivateRoutes';
 import StudentDashboard from '../pages/UserDashBoard/StudentDashboard';
 import CreateTeam from '../pages/UserDashBoard/CreateTeam/CreateTeam';
+import Form from '../pages/UserDashBoard/CreateProject/Form';
+import ProjectWizard from '../pages/UserDashBoard/CreateProject/ProjectWizard';
 
 const AppRoutes = () => {
   return (  
@@ -29,7 +31,7 @@ const AppRoutes = () => {
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/sign-suc" element={<SignSuc />} />
       <Route path="/sign-fail" element={<SignFail />} />
-      
+
       {/* Protected Routes */}
       <Route
         path="/admin-dashboard"
@@ -71,7 +73,9 @@ const AppRoutes = () => {
         path="/create-project"
         element={
           <PrivateRoutes>
-            <CreateProject />
+            {/* <CreateProject /> */}
+            {/* <Form/> */}
+            <ProjectWizard/>
           </PrivateRoutes>
         }
       />
@@ -129,7 +133,7 @@ const AppRoutes = () => {
       />
 
       {/* Catch-all route for 404 */}
-      <Route path="*" element={<PageNotFound />} />
+      <Route path="*" element={<UnderConstruction />} />
     </Routes>
   );
 };

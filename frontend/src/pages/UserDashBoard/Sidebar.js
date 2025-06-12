@@ -75,14 +75,16 @@ function Sidebar() {
           <button onClick={handleProjectCreator}>Project Creator Wizard</button>
           <hr />
           <button onClick={handleMyProjects}>My Projects</button>
+          <hr/>
+          <button>Project Drafts</button>
         </div>
       </div>
 
       {/* <div className="profile-card">
-        <p className="profile-name">{userName}</p>
-        <button className="profile-btn" onClick={handleProfile}>Profile</button>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
-      </div> */}
+        {/* <p className="profile-name">{userName}</p> */}
+        {/* <button className="profile-btn" onClick={handleProfile}>Profile</button> */}
+        {/* <button className="logout-btn" onClick={handleLogout}>Logout</button> */}
+      {/* </div> */} 
     </div>
   );
 }

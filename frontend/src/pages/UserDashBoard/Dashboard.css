@@ -1,8 +1,26 @@
 .dashboard {
   flex: 1;
-  padding: 30px;
+  padding: 20px;
   background-color: #f8f8f8;
+
+  display: flex;
+  flex-wrap: wrap;            /* Allows wrapping to next line */
+  gap: 20px;                  /* Space between cards */
+  justify-content: flex-start; /* Align items to the left */
+  align-items: flex-start;     /* Align top of cards */
+  min-height: 100vh;
+  box-sizing: border-box;
 }
+
 .dashboard h2 {
+  width: 100%;                /* Makes the heading full width */
   font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Optional: Default styles for loading and empty states */
+.dashboard p {
+  font-size: 16px;
+  color: #666;
 }

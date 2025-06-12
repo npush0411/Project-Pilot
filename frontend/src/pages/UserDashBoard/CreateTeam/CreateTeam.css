@@ -1,6 +1,7 @@
 .team-creation-container {
   max-width: 900px;
   margin: auto;
+  margin-top: 10vh;
   padding: 2rem;
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -32,14 +33,14 @@ h2 {
   min-width: 150px;
 }
 
-.tables-wrapper {
+.tables-wrapper1 {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
   justify-content: space-between;
 }
 
-.search-table, .members-table {
+.search-table1, .members-table {
   flex: 1;
   min-width: 300px;
 }
@@ -110,4 +111,24 @@ footer {
 .search-table table td button,
 .members-table table td button {
   display: inline-block;
+}
+/* Styles specifically for action buttons */
+.action-button {
+  background-color: #28a745; /* Bootstrap green */
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  transition: background-color 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: #218838;
 }

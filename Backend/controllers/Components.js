@@ -19,34 +19,46 @@ exports.getAllComponents = async (req, res) => {
 
 // POST: Create a new component
 exports.createComponent = async (req, res) => {
-    try {
-        const { title, cID, description, price } = req.body;
+  try {
+    console.log("Inside Create Component !");
+    const { name, cID, description, price, quantity } = req.body;
 
-        const existingComponent = await Component.findOne({ cID });
+    // Check if a component with the same ID already exists
+    const existingComponent = await Component.findOne({ cID });
 
-        if (existingComponent) {
-            return res.status(400).json({
-                success: false,
-                message: "Component ID isn't available! Please try again."
-            });
-        }
-
-        const newComponent = new Component({ title, cID, description, price });
-        const savedComponent = await newComponent.save();
-
-        res.status(201).json({
-            success: true,
-            data: savedComponent
-        });
-
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: "Failed to create component",
-            error: error.message
-        });
+    if (existingComponent) {
+      return res.status(400).json({
+        success: false,
+        message: "Component ID isn't available! Please try again."
+      });
     }
+
+    // Create and save new component
+    const newComponent = new Component({
+      title:name,
+      cID,
+      description,
+      qnty:quantity,
+      price
+    });
+    console.log(newComponent);
+    const savedComponent = await newComponent.save();
+
+    res.status(201).json({
+      success: true,
+      data: savedComponent
+    });
+
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to create component",
+      error: error.message
+    });
+  }
 };
+
+
 
 // GET: Get a single component by ID
 exports.getComponent = async (req, res) => {

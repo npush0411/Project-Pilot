@@ -1,73 +1,100 @@
+/* Container for the top bar */
 .topbar {
-  background-color: #140434 ;
+  background-color: #140434;
   color: white;
-  padding: 10px 20px;
+  padding: 25px 30px;
   display: flex;
-  justify-content: space-between;
+  height: 3vh;
+  justify-content: center;
   align-items: center;
-  text-align: center;
-}
-.pnm{
-  
-  font-size: 20px;
-  font-weight: bolder;
-  margin: 0;
-
-}
-
-.spacer{
-  text-align: center;
-}
-
- button {
-  width: 100%;
-  padding: 10px;
-  background-color: transparent;
-  color: white;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-}
-
- button:hover {
-  background-color: #7b787e;
-}
-
-.user-info {
   position: relative;
+}
+
+/* Title in the center */
+.spacer {
+  font-size: 22px;
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* User info area on the right */
+.user-info {
+  position: absolute;
+  right: 20px;
   display: flex;
   align-items: center;
+  gap: 10px;
+  max-width: 200px;
+}
+
+/* Username display */
+.pnm {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: pointer;
 }
 
-.dropdown-icon {
-  margin-left: 10px;
-  font-size: 0.9rem;
+/* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-.topbar-menu {
+/* Dropdown content initially hidden */
+.dropdown-content {
+  display: none;
   position: absolute;
-  top: 100%;
   right: 0;
   background-color: #1a004b;
-  padding: 10px;
-  border: 1px solid white;
-  z-index: 1000;
-  min-width: 150px;
-  display: none;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  z-index: 1;
+  flex-direction: column;
+  padding: 6px 0;
+  transition: all 0.2s ease-in-out;
 }
 
-.user-info:hover .topbar-menu {
-  display: block;
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+  display: flex;
 }
 
-.topbar-menu button {
-  background: none;
-  border: none;
+/* Each button in the dropdown */
+.dropdown-content button {
+  background-color: transparent;
   color: white;
-  width: 100%;
+  padding: 10px 16px;
+  border: none;
   text-align: left;
-  padding: 5px 0;
+  width: 100%;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Hover effect for dropdown buttons */
+.dropdown-content button:hover {
+  background-color: #2e0d6e;
+  border-radius: 6px;
+}
+
+/* Icon style to align perfectly */
+.icon {
+  font-size: 18px;
+  min-width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

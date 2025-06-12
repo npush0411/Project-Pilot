@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './CreateTeam.css';
-
+import Topbar from '../Topbar'
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 function generateTEMCode() {
-  const randomNumber = Math.floor(100 + Math.random() * 900);
+  const randomNumber = Math.floor(1000 + Math.random() * 900);
   return "TEM" + randomNumber;
 }
 
 async function getUserData() {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch("http://localhost:4000/api/v1/me", {
+    const response = await fetch(`${BASE_URL}/me`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +54,7 @@ const CreateTeam = () => {
     console.log(data);
 
     try {
-      const response = await fetch("http://localhost:4000/api/v1/create-team", {
+      const response = await fetch(`${BASE_URL}/create-team`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -100,7 +101,7 @@ const CreateTeam = () => {
     async function fetchStudentUsers() {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch("http://localhost:4000/api/v1/get-all-users", {
+        const response = await fetch(`${BASE_URL}/get-all-users`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -151,86 +152,88 @@ const CreateTeam = () => {
   });
 
   return (
-    <div className="team-creation-container">
-      <h2>Team Creation Utility</h2>
+    <div>
+      <Topbar title='Team Creator Wizard'/>
+      <div className="team-creation-container">
+        <div className="input-group">
+          <label>Team Name:</label>
+          <input value={teamName} onChange={e => setTeamName(e.target.value)} />
+          <label>ID:</label>
+          <input value={teamID} readOnly />
+        </div>
 
-      <div className="input-group">
-        <label>Team Name:</label>
-        <input value={teamName} onChange={e => setTeamName(e.target.value)} />
-        <label>ID:</label>
-        <input value={teamID} readOnly />
-      </div>
-
-      <div className="tables-wrapper">
-        <div className="search-table">
-          <div className='test'>
-            <h3>Search</h3>
-            <input
-              className='test1'
-              placeholder="Search name..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMembers.map(user => (
-                <tr key={user.userID}>
-                  <td>{user.userID}</td>
-                  <td>{user.firstName} {user.lastName}</td>
-                  <td>
-                    <button onClick={() => handleAddMember(user)}>➕</button>
-                  </td>
-                </tr>
-              ))}
-              {filteredMembers.length === 0 && (
+        <div className="tables-wrapper1">
+          <div className="search-table1">
+            <div className='test'>
+              <h3>Search</h3>
+              <input
+                className='test1'
+                placeholder="Search name..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="3">No matching users found.</td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Action</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredMembers.map(user => (
+                  <tr key={user.userID}>
+                    <td>{user.userID}</td>
+                    <td>{user.firstName} {user.lastName}</td>
+                    <td>
+                      <button className="action-button" onClick={() => handleAddMember(user)}>+</button>
+                    </td>
+                  </tr>
+                ))}
+                {filteredMembers.length === 0 && (
+                  <tr>
+                    <td colSpan="3">No matching users found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="members-table">
+            <h3>Team Members</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamMembers.map(member => (
+                  <tr key={member.userID}>
+                    <td>{member.userID}</td>
+                    <td>{member.firstName} {member.lastName}</td>
+                    <td>{member.role}</td>
+                    <td>
+                      {member.userID !== uID && (
+                        <button className="action-button" onClick={() => handleRemoveMember(member.userID)}>X</button>
+
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div className="members-table">
-          <h3>Team Members</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teamMembers.map(member => (
-                <tr key={member.userID}>
-                  <td>{member.userID}</td>
-                  <td>{member.firstName} {member.lastName}</td>
-                  <td>{member.role}</td>
-                  <td>
-                    {member.userID !== uID && (
-                      <button onClick={() => handleRemoveMember(member.userID)}>❌</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <button className="create-team-btn" onClick={handleCreateTeam}>
+          Create Team
+        </button>
       </div>
-
-      <button className="create-team-btn" onClick={handleCreateTeam}>
-        Create Team
-      </button>
     </div>
   );
 };
