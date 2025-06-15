@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Card.css';
 
-const Card = ({ title, projectID, description, components, team, guideID, guideName, createdAt }) => {
+const Card = ({
+  title,
+  projectID,
+  description,
+  components,
+  team,
+  guideID,
+  guideName,
+  createdAt,
+}) => {
+  const [showComponentTable, setShowComponentTable] = useState(false);
+
+  const toggleComponentTable = (e) => {
+    e.preventDefault();
+    setShowComponentTable(!showComponentTable);
+  };
+
   return (
     <div className="card">
       <h2>{title}</h2>
+
       <p><span className="label">Project ID:</span> {projectID}</p>
+
       <p><span className="label">Description:</span> {description}</p>
 
       <p>
@@ -15,11 +33,10 @@ const Card = ({ title, projectID, description, components, team, guideID, guideN
             {components.length} component(s) —{' '}
             <a
               className="link-text"
-              href="components"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#"
+              onClick={toggleComponentTable}
             >
-              View Component Table
+              {showComponentTable ? 'Hide Component Table' : 'View Component Table'}
             </a>
           </>
         ) : (
@@ -27,23 +44,32 @@ const Card = ({ title, projectID, description, components, team, guideID, guideN
         )}
       </p>
 
+      {showComponentTable && (
+        <table className="component-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {components.map((comp) => (
+              <tr key={comp.id}>
+                <td>{comp.id}</td>
+                <td>{comp.name}</td>
+                <td>{comp.purpose}</td>
+                <td>{comp.quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
       <p>
         <span className="label">Team:</span>{' '}
-        {team && team.length > 0 ? (
-          <>
-            {team.length} member(s) —{' '}
-            <a
-              className="link-text"
-              href="members"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Members
-            </a>
-          </>
-        ) : (
-          'None'
-        )}
+        {team ? team : 'None'}
       </p>
 
       <p>
@@ -52,7 +78,7 @@ const Card = ({ title, projectID, description, components, team, guideID, guideN
       </p>
 
       <div className="fter">
-        Created: {new Date(createdAt).toLocaleDateString()}
+        Created: {createdAt ? new Date(createdAt).toLocaleDateString() : 'N/A'}
       </div>
     </div>
   );

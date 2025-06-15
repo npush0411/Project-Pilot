@@ -24,6 +24,7 @@ function Dashboard() {
         }
 
         const data = await response.json();
+        console.log(data);
         setProjects(data);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -44,17 +45,22 @@ function Dashboard() {
         <p>No projects found.</p>
       ) : (
         projects.map((project, index) => (
-          <Card
-            key={project.ID || index}
-            title={project.title}
-            projectID={project.ID}
-            description={project.description}
-            components={project.components}
-            team={project.team}
-            guideID={project.projectGuide?.guideID || 'N/A'}
-            guideName={project.projectGuide?.name || 'Unknown'}
-            createdAt={project.createdAt}
-          />
+<Card
+  key={project.ID || index}
+  title={project.title}
+  projectID={project.ID}
+  description={project.description}
+  components={project.components}
+  team={project.team.teamID || 'N/A'}
+  guideID={project.projectGuide.userID || 'N/A'}
+  guideName={
+    project.projectGuide.userID
+      ? `${project.projectGuide.firstName} ${project.projectGuide.lastName}`
+      : 'Unknown'
+  }
+  createdAt={project.createdAt}
+/>
+
         ))
       )}
     </div>

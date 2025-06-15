@@ -23,7 +23,8 @@ const comSchema = new mongoose.Schema({
     required: true
   },
   minPurchace: {
-    type: Number
+    type: Number,
+    default:1
   },
   loc: {
     type: String

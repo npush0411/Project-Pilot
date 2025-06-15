@@ -8,11 +8,17 @@ const { auth, authorizeRole } = require('../middlewares');
 const { login, signUp, verifyOTP, getCurrentUser, verifyToken } = require("../controllers/Auth");
 
 // Project Controllers
-const { createProject, getAllProjects, getAllUsers, getUserProjects } = require("../controllers/Project");
+const { createProject, getAllProjects, getAllUsers, getUserProjects, updateProjectApproval, updateProjectComponents } = require("../controllers/Project");
 
 // Component controllers
-const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable} = require("../controllers/Components");
+const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable, getRequiredOrder, getMidOrder, createOrder, fetchMidOrder, updateMidOrder} = require("../controllers/Components");
 const { createTeam } = require('../controllers/Team');
+
+//Cart Controllers
+const { createCart, getCarts, orderCart, getCart, updateCart, checkInCart } = require('../controllers/Cart');
+
+const {createVendor} = require('../controllers/Vendor');
+
 
 // --- Auth Routes ---
 router.post("/login", login);
@@ -34,9 +40,62 @@ router.post("/create-team", auth,  createTeam);
 
 // --- Project Routes ---
 router.post("/create-project",   createProject);
-router.get("/get-all-projects", auth, authorizeRole("Admin", "Manager", "Instructor"), getAllProjects);
+router.get("/get-all-projects", auth, getAllProjects);
 router.get("/projects-me", auth,  getUserProjects);
+router.put("/:projectID/approval", auth, updateProjectApproval);
+router.put('/update-project-components/:projectId', auth, updateProjectComponents);
 // Optional: Future Protected Controls
 // router.put("/get-controls", auth, authorizeRole("Instructor"), yourController);
+
+
+// --- Order Routes ---
+router.get("/mid-orders/generate", auth, getMidOrder);
+router.get("/mid-orders/fetch", auth, fetchMidOrder);
+router.put("/mid-orders/update", auth, updateMidOrder);
+router.post("/create-order", auth, createOrder);
+
+// --- Cart Routes ---
+router.get("/get-carts", auth, getCarts);
+router.post("/create-cart", auth, createCart);
+router.put("/order-cart", auth, orderCart);
+router.get("/get-cart/:cartID", auth, getCart);
+router.put("/update-cart", auth, updateCart);
+router.put('/cart/checkin/:id', auth, checkInCart);
+
+// --- Vendor Routes ---
+router.post("/create-vendor", auth, createVendor);
+
+
+
+
+
+
+
+// In your Express backend
+const Order = require('../models/Order');
+router.get('/orders/:orderID/invoice', async (req, res) => {
+  try {
+    const order = await Order.findOne({ orderID: req.params.orderID });
+    if (!order || !order.invoicePDF) {
+      return res.status(404).send("Invoice not found");
+    }
+    res.contentType("application/pdf");
+    res.send(order.invoicePDF);
+  } catch (err) {
+    res.status(500).send("Server Error");
+  }
+});
+router.get('/orders', async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    res.status(200).json({
+      success: true,
+      orders: orders
+    });
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 
 module.exports = router;

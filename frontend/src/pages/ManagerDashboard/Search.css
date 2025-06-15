@@ -1,0 +1,172 @@
+.search-container {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+.main-search-body {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.icon {
+  font-size: 20px;
+  color: gray;
+}
+
+.drop-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 48px;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  z-index: 999;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.component-card {
+  margin-top: 30px;
+}
+
+.card {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.component-image {
+  max-width: 150px;
+  object-fit: contain;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cid {
+  font-size: 14px;
+  color: gray;
+}
+
+.description {
+  margin: 10px 0;
+}
+
+.stock-info {
+  margin-top: 10px;
+}
+
+.in-stock {
+  color: green;
+  font-weight: bold;
+}
+
+.out-of-stock {
+  color: red;
+  font-weight: bold;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.primary, .secondary, .green, .red {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.green {
+  background-color: #28a745;
+  color: white;
+}
+
+.red {
+  background-color: #dc3545;
+  color: white;
+}
+
+.side-form {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 10px rgba(0,0,0,0.08);
+}
+
+.side-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.side-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}

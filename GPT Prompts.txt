@@ -1,3 +1,7 @@
+----------------------------------------------------------------
+Project Creation Component Creation Prompt
+----------------------------------------------------------------
+
 The project ID is system generated please  not this at the time of filling information it will not be displayed further and your project ID is only recognizable with this ID.
 Fill all the information correctly the information will not be allowed to edit except the component list !
 Make sure you have specific purpose of that component !
@@ -50,3 +54,14 @@ can you do this ?
 
 
 
+---------------------------------------------------
+Generate Order Prompt 
+---------------------------------------------------
+Create React Component
+Step 1: 
+Show details (midOrder) get this by fetching BASE_URL/get-requirement-details (BASE_URL in process env in std. form REACT_APP) ask for API response for reference for ease of development of UI. give 'Generate Order Invoice' button on click step 2
+Step 2: 
+generate order as only showing fields for ID / Name / Required Quantity from the fetched midOrder give button for print write proper print logic 
+after completion return to navigate('/manager-dashboard') 
+can you do this !!
+first ask for your requirements of any API response schemas(only if needed) some controllers linked for API response and all grab all things take confirmation and then start coding Okay 

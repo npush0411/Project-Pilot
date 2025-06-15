@@ -3,139 +3,69 @@ import { Routes, Route } from 'react-router-dom';
 import Landing from '../pages/landing';
 import SignUp from '../pages/SignUp';
 import AdminDashboard from '../pages/AdminDashboard';
-import UserDashboard from '../pages/UserDashboard';
+import StudentDashboard from '../pages/UserDashBoard/StudentDashboard';
+import ManagerDashboard from '../pages/ManagerDashboard/ManagerDashboard';
+import InstructorDashboard from '../pages/InstructorDashBoard/InstructorDashboard';
 import LoginFailed from '../pages/LogFail';
 import SignSuc from '../pages/signSuc';
 import SignFail from '../pages/signFail';
 import PageNotFound from '../pages/PageNotFound';
 import UnderConstruction from '../pages/UnderConstruction';
-import CreateProject from '../pages/CreateProject';
-import ManagerDashboard from '../pages/ManagerDashboard';
-import InstructorDashboard from '../pages/InstructorDashboard';
-import ManControls from '../pages/ManControls';
+import CreateTeam from '../pages/UserDashBoard/CreateTeam/CreateTeam';
+import ProjectWizard from '../pages/UserDashBoard/CreateProject/ProjectWizard';
 import FailurePage from '../pages/FailurePage';
 import SuccessPage from '../pages/SuccessPage';
 import ProjectsAssociated from '../pages/ProjectsAssociated';
+import ManControls from '../pages/ManControls';
 import PrivateRoutes from './PrivateRoutes';
-import StudentDashboard from '../pages/UserDashBoard/StudentDashboard';
-import CreateTeam from '../pages/UserDashBoard/CreateTeam/CreateTeam';
-import Form from '../pages/UserDashBoard/CreateProject/Form';
-import ProjectWizard from '../pages/UserDashBoard/CreateProject/ProjectWizard';
+import Search from '../pages/ManagerDashboard/Search';
+import ProjectDashboard from '../pages/ManagerDashboard/ProjectDashboard';
+import CreateCart from '../pages/ManagerDashboard/CreateCart';
+import ViewCarts from '../pages/ManagerDashboard/ViewCarts';
+import Order from '../pages/ManagerDashboard/Order';
+import CheckIn from '../pages/ManagerDashboard/CheckIn';
+import RequirementManager from '../pages/ManagerDashboard/RequirementManager';
+import CreateComponent from '../pages/ManagerDashboard/CreateComponent';
+const AppRoutes = () => (
+  <Routes>
+    {/* Public Routes */}
+    <Route path="/" element={<Landing />} />
+    <Route path="/sign-up" element={<SignUp />} />
+    <Route path="/log-fail" element={<LoginFailed />} />
+    <Route path="/sign-suc" element={<SignSuc />} />
+    <Route path="/sign-fail" element={<SignFail />} />
 
-const AppRoutes = () => {
-  return (  
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Landing />} />
-      <Route path="/log-fail" element={<LoginFailed />} />
-      <Route path="/sign-up" element={<SignUp />} />
-      <Route path="/sign-suc" element={<SignSuc />} />
-      <Route path="/sign-fail" element={<SignFail />} />
+    {/* Protected Routes - Dashboards */}
+    <Route path="/admin-dashboard" element={<PrivateRoutes><AdminDashboard /></PrivateRoutes>} />
+    <Route path="/student-dashboard" element={<PrivateRoutes><StudentDashboard /></PrivateRoutes>} />
+    <Route path="/manager-dashboard" element={<PrivateRoutes><ManagerDashboard /></PrivateRoutes>} />
+    <Route path="/instructor-dashboard" element={<PrivateRoutes><InstructorDashboard /></PrivateRoutes>} />
 
-      {/* Protected Routes */}
-      <Route
-        path="/admin-dashboard"
-        element={
-          <PrivateRoutes>
-            <AdminDashboard />
-          </PrivateRoutes>
-        }
-      />
+    {/* Protected Routes - Project & Team */}
+    <Route path="/create-project" element={<PrivateRoutes><ProjectWizard /></PrivateRoutes>} />
+    <Route path="/create-team" element={<PrivateRoutes><CreateTeam /></PrivateRoutes>} />
+    <Route path="/projects" element={<PrivateRoutes><ProjectsAssociated /></PrivateRoutes>} />
+    <Route path="/update-project" element={<PrivateRoutes><UnderConstruction /></PrivateRoutes>} />
+    <Route path='/all-projects' element={<PrivateRoutes><ProjectDashboard/></PrivateRoutes>}/>
+    {/* Protected Routes - Status Pages */}
+    <Route path="/project-fail" element={<PrivateRoutes><FailurePage /></PrivateRoutes>} />
+    <Route path="/project-success" element={<PrivateRoutes><SuccessPage /></PrivateRoutes>} />
 
-      <Route
-        path="/student-dashboard"
-        element={
-          <PrivateRoutes>
-            <StudentDashboard />
-          </PrivateRoutes>
-        }
-      />
+    {/* Protected Routes - Manager Controls */}
+    <Route path="/man-controls" element={<PrivateRoutes><ManControls /></PrivateRoutes>} />
 
-      <Route
-        path="/manager-dashboard"
-        element={
-          <PrivateRoutes>
-            <ManagerDashboard />
-          </PrivateRoutes>
-        }
-      />
+    {/* Instructor Routes */}
 
-      <Route
-        path="/instructor-dashboard"
-        element={
-          <PrivateRoutes>
-            <InstructorDashboard />
-          </PrivateRoutes>
-        }
-      />
-
-      <Route
-        path="/create-project"
-        element={
-          <PrivateRoutes>
-            {/* <CreateProject /> */}
-            {/* <Form/> */}
-            <ProjectWizard/>
-          </PrivateRoutes>
-        }
-      />
-
-      <Route path='/create-team' element={
-        <PrivateRoutes>
-          <CreateTeam/>
-        </PrivateRoutes>
-      }
-      />
-
-      <Route
-        path="/project-fail"
-        element={
-          <PrivateRoutes>
-            <FailurePage />
-          </PrivateRoutes>
-        }
-      />
-
-      <Route
-        path="/project-success"
-        element={
-          <PrivateRoutes>
-            <SuccessPage />
-          </PrivateRoutes>
-        }
-      />
-
-      <Route
-        path="/projects"
-        element={
-          <PrivateRoutes>
-            <ProjectsAssociated />
-          </PrivateRoutes>
-        }
-      />
-
-      <Route
-        path="/update-project"
-        element={
-          <PrivateRoutes>
-            <UnderConstruction />
-          </PrivateRoutes>
-        }
-      />
-
-      <Route
-        path="/man-controls"
-        element={
-          <PrivateRoutes>
-            <ManControls />
-          </PrivateRoutes>
-        }
-      />
-
-      {/* Catch-all route for 404 */}
-      <Route path="*" element={<UnderConstruction />} />
-    </Routes>
-  );
-};
+    {/*Managet Routes */}
+    <Route path='/search-components' element={<PrivateRoutes><Search/></PrivateRoutes>}/>
+    <Route path='/get-order' element={<PrivateRoutes><RequirementManager/></PrivateRoutes>}/>
+    <Route path='/view-carts' element={<PrivateRoutes><ViewCarts/></PrivateRoutes>}/>
+    <Route path='/cart-order/:cartID' element={<PrivateRoutes><Order/></PrivateRoutes>}/>
+    <Route path="/cart-check-in/:id" element={<PrivateRoutes><CheckIn/></PrivateRoutes>} />
+    <Route path='/create-component' element={<PrivateRoutes><CreateComponent/></PrivateRoutes>}/>
+    
+    <Route path="*" element={<UnderConstruction />} />
+  </Routes>
+);
 
 export default AppRoutes;

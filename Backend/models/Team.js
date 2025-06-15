@@ -11,6 +11,12 @@ const teamSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  projects:[
+          {
+              type: mongoose.Schema.Types.ObjectId,
+              ref:"Project"
+          }
+      ],
   members: [
     {
       userID: {

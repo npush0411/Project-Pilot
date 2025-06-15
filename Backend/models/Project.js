@@ -32,13 +32,39 @@ const prjSchema = new mongoose.Schema({
                 type:String,
                 trim:true
             },
-            quantiy:{
+            quantity:{
                 type:Number,
                 required:true,
                 default:1
+            },
+            accepted:{
+                type:Boolean,
+                required:true,
+                default:false
             }
+            // entryMade:{
+            //     type:Boolean,
+            //     required:true,
+            //     default:false
+            // }
         }
     ],
+    componentRejections: [
+    {
+        remark: {
+        type: String,
+        required: true
+        },
+        componentIds: [String],
+        date: {
+        type: Date,
+        default: Date.now
+        }
+    }
+    ],
+    rejectRemark:{
+        type:String
+    },
     isCompleted: {
         type: Boolean,
         default: false
@@ -48,11 +74,10 @@ const prjSchema = new mongoose.Schema({
         default: null
     },
     teamID: 
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref: "teams"
-        }
-    ,
+    {
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "Team"
+    },
     createdAt: {
         type: Date,
         required: true,
@@ -62,9 +87,13 @@ const prjSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    appMan:{
+        type:Boolean,
+        default:false
+    },
     status: {
         type: Number,
-        enum: [0, 1, 2, 3], // Each number corresponds to a status string
+        enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], // Each number corresponds to a status string
         default: 0,
         required: true
     },

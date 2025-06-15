@@ -1,0 +1,124 @@
+.order-container {
+  margin-top: 10rem;
+  padding: 2rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.order-container h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.vendor-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.vendor-section label {
+  font-weight: bold;
+}
+
+.vendor-section input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  flex-grow: 1;
+}
+
+.vendor-section button {
+  padding: 0.5rem 1rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vendor-section button:hover {
+  background-color: #155a9b;
+}
+
+.order-summary {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.order-summary h3 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  color: #222;
+}
+
+.order-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.order-summary table th,
+.order-summary table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.order-summary table th {
+  background-color: #1976d2;
+  color: white;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.actions button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actions button:first-child {
+  background-color: #4caf50;
+  color: white;
+}
+
+.actions button:first-child:hover {
+  background-color: #388e3c;
+}
+
+.actions button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+.actions button:last-child:hover {
+  background-color: #d32f2f;
+}
+
+.pdf-notice {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #e3f2fd;
+  border-left: 5px solid #2196f3;
+  color: #0d47a1;
+  font-weight: 500;
+  border-radius: 6px;
+}

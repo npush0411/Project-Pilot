@@ -3,6 +3,7 @@ const Project = require("../models/Project");
 const User = require("../models/User");
 const Component = require("../models/Component");
 const Team = require("../models/Team");
+const { getMidOrder } = require("./Components");
 
 exports.createProject = async (req, res) => {
   try {
@@ -66,20 +67,7 @@ exports.createProject = async (req, res) => {
       return res.status(400).json({ message: "Guide must be an Instructor." });
     }
 
-    // Step 7: Validate Components availability
-    // const componentDocs = await Component.find({
-    //   cID: { $in: components },
-    //   // available: true
-    // });
-
-    // if (componentDocs.length !== components.length) {
-    //   return res.status(400).json({
-    //     message: "Some components are invalid or unavailable. Please review and try again."
-    //   });
-    // }
-
-    // const componentObjectIds = componentDocs.map(comp => comp._id);
-
+    
     // Step 8: Create Project
     const newProject = new Project({
       title,
@@ -91,9 +79,23 @@ exports.createProject = async (req, res) => {
       guideID:guideDoc._id
     });
 
-    const savedProject = await newProject.save();
 
+    const savedProject = await newProject.save();
    
+    // Step 9: Update Team with new project reference
+    teamDoc.projects.push(savedProject._id);
+    await teamDoc.save();
+      
+    for (const user of teamUsers) {
+      user.projects.push(savedProject._id);
+      await user.save();
+    }
+
+    // Step 10: Update guide's project list
+    guideDoc.projects.push(savedProject._id);
+    await guideDoc.save();
+
+
     return res.status(201).json({
       message: "Project created successfully.",
       project: savedProject
@@ -109,7 +111,10 @@ exports.createProject = async (req, res) => {
 // Controller to Fetch All Projects
 exports.getAllProjects = async (req, res) => {
     try {
-        const projects = await Project.find({});
+        const projects = await Project.find({})
+        .populate('teamID')
+        .populate('guideID');
+        console.log(projects);
         if (!projects || projects.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -155,7 +160,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserProjects = async (req, res) => {
   try {
     const userId = req.user.userId; // Extracted from JWT
-    console.log('User ID:', userId);
+    // console.log('User ID:', userId);
 
     // Fetch user with projects
     const user = await User.findById(userId);
@@ -165,7 +170,8 @@ exports.getUserProjects = async (req, res) => {
 
     // Fetch only the projects listed in user's "projects" array
    const projects = await Project.find({ _id: { $in: user.projects } })
-  .populate('guideID', 'firstName lastName userID')
+  .populate('guideID')
+  .populate('teamID')
   .lean(); // ✅ This is the KEY fix!
 
     console.log(projects);
@@ -176,11 +182,11 @@ exports.getUserProjects = async (req, res) => {
       ID: p.ID,
       description: p.description,
       components: p.components,
-      team: p.team,
-      projectGuide: {
-        guideID: p.projectGuide?.userID?.toString() || 'N/A',
-        name: p.projectGuide ? `${p.projectGuide.firstName} ${p.projectGuide.lastName}` : 'Unknown'
-      },
+      team:p.teamID,
+      status:p.status,
+      isApproved:p.approved,
+      // members:p.teamI
+      projectGuide: p.guideID,
       createdAt: p.createdAt
     }));
     console.log(formattedProjects);
@@ -188,5 +194,102 @@ exports.getUserProjects = async (req, res) => {
   } catch (error) {
     console.error('Error fetching user projects:', error);
     res.status(500).json({ message: 'Server error fetching user projects' });
+  }
+};
+
+// PUT /projects/:projectID/approval
+exports.updateProjectApproval = async (req, res) => {
+  console.log("Inside Update Project");
+  try {
+    const { projectID } = req.params;
+    const { approved } = req.body;
+
+    if (typeof approved !== 'boolean') {
+      return res.status(400).json({ message: "Invalid 'approved' value. Must be true or false." });
+    }
+
+    // Find project by ID field (not _id)
+    const project = await Project.findOne({ ID: projectID });
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // console.log("Before:", project.status);
+    project.approved = approved;
+
+    if (!approved) {
+      if (project.status === 1) {
+        project.status = 0;
+      }
+    } else {
+      project.status = 1;
+    }
+    // console.log("After:", project.status);
+    await project.save();
+
+
+    return res.status(200).json({ message: 'Project approval status updated', project });
+  } catch (error) {
+    console.error('Error updating project approval:', error);
+    return res.status(500).json({ message: 'Server error while updating approval status' });
+  }
+};
+
+
+exports.updateProjectComponents = async (req, res) => {
+  const { projectId } = req.params;
+  const { updatedComponents, remark } = req.body;
+  console.log(projectId, updatedComponents, remark);
+
+  try {
+    const project = await Project.findOne({ ID: projectId });
+    if (!project) {
+      return res.status(404).json({ success: false, message: "Project not found" });
+    }
+
+    const rejectedIds = [];
+    let total = 0;
+    let acceptedCount = 0;
+
+    // Update each component's 'accepted' value
+    project.components = project.components.map(comp => {
+      const update = updatedComponents.find(u => u.id === comp.id);
+      if (update) {
+        comp.accepted = update.accepted;
+        total++;
+        if (update.accepted) {
+          acceptedCount++;
+        } else {
+          rejectedIds.push(update.id);
+        }
+      }
+      return comp;
+    });
+
+    // Push rejection remark if there are any rejected components and remark is given
+    if (rejectedIds.length > 0 && remark?.trim()) {
+      project.componentRejections.push({
+        remark: remark,
+        componentIds: rejectedIds
+      });
+    }
+
+    // Determine and update status
+    if (acceptedCount === total) {
+      project.status = 2; // All accepted
+    } else if (acceptedCount === 0) {
+      project.status = 9; // All rejected
+    } else {
+      project.status = 11; // Some accepted, some rejected
+    }
+
+    
+    await project.save();
+    getMidOrder();
+    return res.status(200).json({ success: true, message: "Project components updated." });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 };

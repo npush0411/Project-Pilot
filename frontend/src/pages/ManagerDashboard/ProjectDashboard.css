@@ -1,0 +1,170 @@
+.project-dashboard {
+
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+.mst{
+  margin: 5rem;
+}
+
+.project-dashboard h2 {
+
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.project-table th,
+.project-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.project-table th {
+  background-color: #f5f5f5;
+}
+
+.view-btn {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 900px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.component-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.component-table th,
+.component-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.component-table th {
+  background-color: #f0f0f0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.close-btn,
+.accept-btn,
+.reject-btn,
+.confirm-reject-btn {
+  padding: 8px 16px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-btn {
+  background-color: #6c757d;
+}
+
+.close-btn:hover {
+  background-color: #5a6268;
+}
+
+.accept-btn {
+  background-color: #28a745;
+}
+
+.accept-btn:hover {
+  background-color: #218838;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+}
+
+.reject-btn:hover {
+  background-color: #c82333;
+}
+
+.remark-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.remark-section textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  resize: vertical;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+}
+.component-table th:first-child {
+  width: 40px;
+  text-align: center;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.search-input {
+  width: 60%; /* Previously 60% */
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.filter-select {
+  width: 5%; /* Previously default/small */
+  padding: 0.5rem;
+  font-size: 1rem;
+}

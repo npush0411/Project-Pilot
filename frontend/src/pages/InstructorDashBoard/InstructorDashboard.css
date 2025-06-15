@@ -1,0 +1,47 @@
+/* Overall layout */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Sidebar on the left */
+.dashboard-layout > .sidebar {
+  width: 220px;
+  min-width: 220px;
+  height: 100%;
+  background-color: #140434;
+  color: white;
+  z-index: 2;
+}
+
+/* Main content area (topbar + content) */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f6f8;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Topbar sticks to top */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f6f8;
+  overflow: hidden; 
+  position: relative;
+  width: 100%;
+}
+.dashboard-body {
+  padding: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start; /* or center, space-between, etc. */
+  overflow-y: auto;
+  height: 100%;
+}

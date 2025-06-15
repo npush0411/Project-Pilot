@@ -1,0 +1,124 @@
+.card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 10px;
+  min-width: 40vw; /* allow it to expand */
+  height: fit-content;
+  max-width: 60vw; /* optional upper limit */
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  will-change: transform;
+  transform-origin: center center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Header */
+.card h2 {
+  margin: 0 0 10px;
+  color: #2c3e50;
+  font-size: 1.4rem;
+}
+
+/* Paragraphs */
+.card p {
+  margin: 5px 0;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Label text */
+.label {
+  font-weight: bold;
+  color: #444;
+}
+
+/* Links */
+.link-text {
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link-text:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.fter {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #888;
+  text-align: right;
+}
+
+/* Button container */
+.card-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Button base style */
+.approve-btn,
+.deny-btn {
+  padding: 0.5rem 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Approve button */
+.approve-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.approve-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+/* Deny button */
+.deny-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.deny-btn:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
+
+/* Footer container (row layout for date + buttons) */
+.card-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Optional: wrap on small screens */
+}
+
+.fter {
+  font-size: 0.9em;
+  color: #888;
+}
+
+/* Buttons stay same */
+.card-buttons {
+  display: flex;
+  gap: 10px;
+}
