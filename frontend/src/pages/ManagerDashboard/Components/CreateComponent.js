@@ -3,7 +3,7 @@ import axios from 'axios';
 import './CreateComponent.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import TopBarWithLogo from './TopBarWithLogo';
+import TopBarWithLogo from '../TopBarWithLogo';
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const compressImage = (file, quality = 0.7) => {

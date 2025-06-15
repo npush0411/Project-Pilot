@@ -1,12 +1,12 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Landing from '../pages/landing';
+import Login from '../pages/Authentication/Login';
 import SignUp from '../pages/SignUp';
 import AdminDashboard from '../pages/AdminDashboard';
 import StudentDashboard from '../pages/UserDashBoard/StudentDashboard';
 import ManagerDashboard from '../pages/ManagerDashboard/ManagerDashboard';
 import InstructorDashboard from '../pages/InstructorDashBoard/InstructorDashboard';
-import LoginFailed from '../pages/LogFail';
+import LoginFailed from '../pages/Authentication/LogFail';
 import SignSuc from '../pages/signSuc';
 import SignFail from '../pages/signFail';
 import PageNotFound from '../pages/PageNotFound';
@@ -15,21 +15,22 @@ import CreateTeam from '../pages/UserDashBoard/CreateTeam/CreateTeam';
 import ProjectWizard from '../pages/UserDashBoard/CreateProject/ProjectWizard';
 import FailurePage from '../pages/FailurePage';
 import SuccessPage from '../pages/SuccessPage';
-import ProjectsAssociated from '../pages/ProjectsAssociated';
-import ManControls from '../pages/ManControls';
+// import ProjectsAssociated from '../pages/ProjectsAssociated';
+// import ManControls from '../pages/ManControls';
 import PrivateRoutes from './PrivateRoutes';
-import Search from '../pages/ManagerDashboard/Search';
-import ProjectDashboard from '../pages/ManagerDashboard/ProjectDashboard';
-import CreateCart from '../pages/ManagerDashboard/CreateCart';
-import ViewCarts from '../pages/ManagerDashboard/ViewCarts';
-import Order from '../pages/ManagerDashboard/Order';
-import CheckIn from '../pages/ManagerDashboard/CheckIn';
-import RequirementManager from '../pages/ManagerDashboard/RequirementManager';
-import CreateComponent from '../pages/ManagerDashboard/CreateComponent';
+import Search from '../pages/ManagerDashboard/Components/Search';
+import ProjectDashboard from '../pages/ManagerDashboard/Projects/ProjectDashboard';
+// import CreateCart from '../pages/ManagerDashboard/CreateCart';
+import ViewCarts from '../pages/ManagerDashboard/Cart/ViewCarts';
+import Order from '../pages/ManagerDashboard/Cart/Order';
+import CheckIn from '../pages/ManagerDashboard/Cart/CheckIn';
+import RequirementManager from '../pages/ManagerDashboard/Cart/RequirementManager';
+import CreateComponent from '../pages/ManagerDashboard/Components/CreateComponent';
+
 const AppRoutes = () => (
   <Routes>
     {/* Public Routes */}
-    <Route path="/" element={<Landing />} />
+    <Route path="/" element={<Login />} />
     <Route path="/sign-up" element={<SignUp />} />
     <Route path="/log-fail" element={<LoginFailed />} />
     <Route path="/sign-suc" element={<SignSuc />} />
@@ -44,7 +45,7 @@ const AppRoutes = () => (
     {/* Protected Routes - Project & Team */}
     <Route path="/create-project" element={<PrivateRoutes><ProjectWizard /></PrivateRoutes>} />
     <Route path="/create-team" element={<PrivateRoutes><CreateTeam /></PrivateRoutes>} />
-    <Route path="/projects" element={<PrivateRoutes><ProjectsAssociated /></PrivateRoutes>} />
+    {/* <Route path="/projects" element={<PrivateRoutes><ProjectsAssociated /></PrivateRoutes>} /> */}
     <Route path="/update-project" element={<PrivateRoutes><UnderConstruction /></PrivateRoutes>} />
     <Route path='/all-projects' element={<PrivateRoutes><ProjectDashboard/></PrivateRoutes>}/>
     {/* Protected Routes - Status Pages */}
@@ -52,7 +53,7 @@ const AppRoutes = () => (
     <Route path="/project-success" element={<PrivateRoutes><SuccessPage /></PrivateRoutes>} />
 
     {/* Protected Routes - Manager Controls */}
-    <Route path="/man-controls" element={<PrivateRoutes><ManControls /></PrivateRoutes>} />
+    {/* <Route path="/man-controls" element={<PrivateRoutes><ManControls /></PrivateRoutes>} /> */}
 
     {/* Instructor Routes */}
 

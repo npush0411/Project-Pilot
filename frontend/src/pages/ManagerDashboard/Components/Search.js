@@ -3,7 +3,7 @@ import './Search.css';
 import axios from 'axios';
 import { FiSearch } from 'react-icons/fi';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import Topbar from './Topbar';
+import Topbar from '../Topbar';
 
 const Search = () => {
   const [components, setComponents] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ProjectDashboard.css';
-import Topbar from './Topbar';
+import Topbar from '../Topbar';
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const ProjectDashboard = () => {

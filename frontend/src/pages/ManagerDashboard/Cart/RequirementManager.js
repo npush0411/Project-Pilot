@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './RequirementManager.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import TopBarWithLogo from './TopBarWithLogo';
+import TopBarWithLogo from '../TopBarWithLogo';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 

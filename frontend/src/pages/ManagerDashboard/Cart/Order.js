@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CreateVendor from './CreateVendor';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import logo from '../../images/logo.png'; // replace with correct path
+import logo from '../../../images/logo.png'; // replace with correct path
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
