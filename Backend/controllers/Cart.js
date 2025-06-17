@@ -53,7 +53,13 @@ exports.createCart = async (req, res) => {
 exports.getCarts = async (req, res) => {
   try {
     const carts = await Cart.find({});
-    console.log(carts[0].vendorID, carts[0].vendorName);
+
+    if (carts.length > 0) {
+      console.log("Cart Sample Vendor Info:", carts[0]?.vendorID || "N/A", carts[0]?.vendorName || "N/A");
+    } else {
+      console.log("No carts found.");
+    }
+
     return res.status(200).json({
       success: true,
       data: carts
@@ -63,6 +69,7 @@ exports.getCarts = async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 
 
 exports.orderCart = async (req, res) => {

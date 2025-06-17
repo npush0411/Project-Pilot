@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
   const navigate = useNavigate();
+  const currentYear = new Date().getFullYear();
+  const passingYears = Array.from({ length: 5 }, (_, i) => currentYear + i);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -12,24 +15,39 @@ function SignUp() {
     contactNumber: '',
     email: '',
     password: '',
+    cPassword: '',
     accountType: '',
-    cPassword: ''
+    batch: '',
+    passingYear: '',
+    academicYear: '',
   });
 
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+
+    if (name === 'accountType' && value !== 'Student') {
+      setFormData((prev) => ({
+        ...prev,
+        accountType: value,
+        batch: '',
+        passingYear: '',
+        academicYear: '',
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       console.log(formData);
-      const response = await fetch("http://localhost:4000/api/v1/signup", {
+      const response = await fetch('http://localhost:4000/api/v1/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -64,8 +82,7 @@ function SignUp() {
           { label: 'Contact Number', name: 'contactNumber', type: 'text' },
           { label: 'Email', name: 'email', type: 'email' },
           { label: 'Password', name: 'password', type: 'password' },
-          { label: 'Confirm Password', name:'cPassword', type:'password'}
-          // { label: 'Profile Image URL', name: 'image', type: 'text' },
+          { label: 'Confirm Password', name: 'cPassword', type: 'password' },
         ].map((field) => (
           <div className='form-group' key={field.name}>
             <label>{field.label}:</label>
@@ -89,6 +106,40 @@ function SignUp() {
             <option value='Manager'>Manager</option>
           </select>
         </div>
+
+        {formData.accountType === 'Student' && (
+          <>
+            <div className='form-group'>
+              <label>Batch (EN-):</label>
+              <select name='batch' value={formData.batch} onChange={handleChange} required>
+                <option value=''>-- Select Batch --</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                  <option key={num} value={`EN-${num}`}>{`EN-${num}`}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className='form-group'>
+              <label>Passing Year:</label>
+              <select name='passingYear' value={formData.passingYear} onChange={handleChange} required>
+                <option value=''>-- Select Year --</option>
+                {passingYears.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className='form-group'>
+              <label>Academic Year:</label>
+              <select name='academicYear' value={formData.academicYear} onChange={handleChange} required>
+                <option value=''>-- Select Academic Year --</option>
+                {[1, 2, 3, 4].map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
 
         {error && <p className='error-text'>{error}</p>}
         <input type='submit' value='Sign Up' className='signup-button' />

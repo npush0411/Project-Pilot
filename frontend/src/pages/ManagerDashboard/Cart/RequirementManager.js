@@ -22,8 +22,6 @@ const RequirementManager = () => {
 
   useEffect(() => {
     fetchInitialData();
-    console.log("Edit Mode:", editMode);
-    console.log("Cart Object:", cart);
   }, []);
 
   useEffect(() => {
@@ -46,7 +44,6 @@ const RequirementManager = () => {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
-
       const filteredReqs = reqRes.data.data.filter(item => item.toOrder > 0);
       setMidOrders(filteredReqs);
       setInitialMidOrders(reqRes.data.data);
@@ -99,13 +96,16 @@ const RequirementManager = () => {
     const enteredQty = parseInt(quantity);
 
     if (existing) {
-      if (enteredQty >= existing.toOrder) {
-        updatedMidOrders = updatedMidOrders.filter(item => item.ID !== ID);
-      } else {
-        updatedMidOrders = updatedMidOrders.map(item =>
-          item.ID === ID ? { ...item, toOrder: item.toOrder - enteredQty } : item
-        );
-      }
+      const updatedQty = Math.min(enteredQty, existing.toOrder);
+      updatedMidOrders = updatedMidOrders.map(item =>
+        item.ID === ID
+          ? {
+              ...item,
+              toOrder: item.toOrder - updatedQty,
+              ordered: (item.ordered || 0) + updatedQty
+            }
+          : item
+      ).filter(item => item.toOrder > 0);
     }
 
     if (isNewComponent) {
@@ -139,11 +139,22 @@ const RequirementManager = () => {
         if (alreadyExists) {
           setMidOrders(midOrders.map(item =>
             item.ID === original.ID
-              ? { ...item, toOrder: item.toOrder + itemToRemove.orderedQuantity }
+              ? {
+                  ...item,
+                  toOrder: item.toOrder + itemToRemove.orderedQuantity,
+                  ordered: Math.max((item.ordered || 0) - itemToRemove.orderedQuantity, 0)
+                }
               : item
           ));
         } else {
-          setMidOrders([...midOrders, original]);
+          setMidOrders([
+            ...midOrders,
+            {
+              ...original,
+              toOrder: itemToRemove.orderedQuantity,
+              ordered: Math.max((original.ordered || 0) - itemToRemove.orderedQuantity, 0)
+            }
+          ]);
         }
       }
     }
@@ -153,14 +164,8 @@ const RequirementManager = () => {
 
   const handleSaveCart = async () => {
     try {
-      const res1 = await axios.put(`${BASE_URL}/mid-orders/update`, {
-        updatedReqs: midOrders,
-        creationDate: new Date()
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
       let res2;
+      let newCartID;
 
       if (editMode) {
         const updatedCart = {
@@ -177,28 +182,50 @@ const RequirementManager = () => {
         res2 = await axios.put(`${BASE_URL}/update-cart`, updatedCart, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
+        newCartID = cart.ID;
       } else {
         res2 = await axios.post(`${BASE_URL}/create-cart`, {
           details: cartItems,
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
+        newCartID = res2?.data?.data?.ID;
       }
 
-      if (!res1 && !res2) {
-        alert(`Unable to ${editMode ? 'Update' : 'Create'} Cart and Requirement Table`);
+      if (!res2?.data?.success || !newCartID) {
+        alert(`Failed to ${editMode ? 'update' : 'create'} Cart. Requirement Table update skipped.`);
         return;
-      } else if (!res1) {
-        alert(`Cart ${editMode ? 'Updated' : 'Created'} but failed to update Requirement Table`);
-        return;
-      } else if (!res2) {
-        alert(`Requirement Table updated but failed to ${editMode ? 'Update' : 'Create'} Cart`);
+      }
+
+      const updatedMidOrdersPayload = initialMidOrders.map(item => {
+        const remaining = midOrders.find(m => m.ID === item.ID);
+        return {
+          ID: item.ID,
+          toOrder: remaining ? remaining.toOrder : 0,
+          ordered: remaining ? remaining.ordered : item.ordered || 0,
+          cartID: newCartID
+        };
+      });
+
+      const res1 = await axios.put(`${BASE_URL}/mid-orders/update`, {
+        updatedReqs: updatedMidOrdersPayload,
+        creationDate: new Date(),
+        cartID: newCartID
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res1) {
+        alert(`Cart ${editMode ? 'updated' : 'created'} but failed to update Requirement Table`);
         return;
       }
 
       alert(`Cart ${editMode ? 'updated' : 'created'} and requirement table saved successfully!`);
       setCartItems([]);
       navigate(-1);
+
     } catch (err) {
       console.error(err);
       alert(`Failed to ${editMode ? 'update' : 'save'} cart.`);
@@ -242,7 +269,7 @@ const RequirementManager = () => {
           <table>
             <thead>
               <tr>
-                <th>ID</th><th>Name</th><th>Required</th><th>Available</th><th>To Order</th>
+                <th>ID</th><th>Name</th><th>Required</th><th>Available</th><th>Ordered</th><th>To Order</th>
               </tr>
             </thead>
             <tbody>
@@ -252,6 +279,7 @@ const RequirementManager = () => {
                   <td>{item.name}</td>
                   <td>{item.reqty}</td>
                   <td>{item.available}</td>
+                  <td>{item.ordered}</td>
                   <td>{item.toOrder}</td>
                 </tr>
               ))}

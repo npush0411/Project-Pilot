@@ -11,13 +11,13 @@ const { login, signUp, verifyOTP, getCurrentUser, verifyToken } = require("../co
 const { createProject, getAllProjects, getAllUsers, getUserProjects, updateProjectApproval, updateProjectComponents } = require("../controllers/Project");
 
 // Component controllers
-const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable, getRequiredOrder, getMidOrder, createOrder, fetchMidOrder, updateMidOrder} = require("../controllers/Components");
+const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable, getRequiredOrder, getMidOrder, createOrder, fetchMidOrder, updateMidOrder, getReqTable, createComponentInForm} = require("../controllers/Components");
 const { createTeam } = require('../controllers/Team');
 
 //Cart Controllers
 const { createCart, getCarts, orderCart, getCart, updateCart, checkInCart } = require('../controllers/Cart');
 
-const {createVendor} = require('../controllers/Vendor');
+const {createVendor, getAllVendors} = require('../controllers/Vendor');
 
 
 // --- Auth Routes ---
@@ -30,11 +30,13 @@ router.get("/verify-token", verifyToken);
 
 // --- Component Routes ---
 router.post("/create-component", auth,  createComponent);
+router.post("/create-component/form", auth,  createComponentInForm);
 router.get("/get-all-components", getAllComponents);
 router.get("/get-component/:cID", auth, getComponent);
 router.delete("/delete-component/:cID", auth, authorizeRole("Admin", "Manager"), deleteComponent);
 router.put("/update-component/:cID", auth, authorizeRole("Admin", "Manager"), updateComponent);
 router.put("/make-available/:cID", auth,  makeAvailable);
+router.get("/get", getReqTable);
 // --- Team Routes ---
 router.post("/create-team", auth,  createTeam);
 
@@ -65,7 +67,7 @@ router.put('/cart/checkin/:id', auth, checkInCart);
 // --- Vendor Routes ---
 router.post("/create-vendor", auth, createVendor);
 
-
+router.get("/get-all-vendors", auth, getAllVendors);
 
 
 

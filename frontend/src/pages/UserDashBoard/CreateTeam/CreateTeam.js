@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './CreateTeam.css';
-import Topbar from '../Topbar'
+import Topbar from '../Topbar';
+
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 function generateTEMCode() {
   const randomNumber = Math.floor(1000 + Math.random() * 900);
   return "TEM" + randomNumber;
@@ -17,10 +19,6 @@ async function getUserData() {
         'Authorization': `Bearer ${token}`
       }
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
     const result = await response.json();
     return result.data || null;
@@ -38,52 +36,18 @@ const CreateTeam = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [userName, setUserName] = useState('');
   const [uID, setUID] = useState('');
-
-  const createTeamInBackend = async () => {
-    const token = localStorage.getItem('token');
-
-    const data = {
-      teamName,
-      teamID,
-      members: teamMembers.map(member => ({
-        userID: member.userID,
-        role: member.role
-      }))
-    };
-
-    console.log(data);
-
-    try {
-      const response = await fetch(`${BASE_URL}/create-team`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        alert('Team created successfully!');
-        console.log('Response:', result);
-      } else {
-        alert(`Failed to create team: ${result.message || 'Unknown error'}`);
-        console.error('Error:', result);
-      }
-    } catch (error) {
-      alert('Something went wrong while creating the team.');
-      console.error('Error creating team:', error);
-    }
-  };
+  const [leadBatch, setLeadBatch] = useState(null);
+  const [leadPassingYear, setLeadPassingYear] = useState(null);
+  const [crossBatch, setCrossBatch] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       const data = await getUserData();
-      if (data && typeof data === 'object' && data.ID && data.name) {
+      if (data) {
         setUID(data.ID);
         setUserName(data.name);
+        setLeadBatch(data.batch);
+        setLeadPassingYear(data.passingYear);
 
         setTeamMembers([{
           userID: data.ID,
@@ -91,10 +55,6 @@ const CreateTeam = () => {
           lastName: data.name.split(' ')[1] || '',
           role: 'Lead'
         }]);
-      } else {
-        setUID('');
-        setUserName('');
-        setTeamMembers([]);
       }
     }
 
@@ -110,6 +70,7 @@ const CreateTeam = () => {
         });
 
         const result = await response.json();
+        console.log(result);
         const studentsList = result.success
           ? result.data.filter(user => user.accountType === 'Student')
           : [];
@@ -120,8 +81,8 @@ const CreateTeam = () => {
       }
     }
 
-    fetchStudentUsers();
     fetchData();
+    fetchStudentUsers();
   }, []);
 
   const handleAddMember = (member) => {
@@ -136,103 +97,143 @@ const CreateTeam = () => {
     setTeamMembers(prev => prev.filter(member => member.userID !== userID));
   };
 
-  const handleCreateTeam = () => {
+  const handleCreateTeam = async () => {
     if (!teamName.trim()) {
       alert("Team name is required.");
       return;
     }
-    createTeamInBackend();
+
+    const token = localStorage.getItem('token');
+    const data = {
+      teamName,
+      teamID,
+      members: teamMembers.map(member => ({
+        userID: member.userID,
+        role: member.role
+      }))
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/create-team`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      if (response.ok && result.success) {
+        alert('Team created successfully!');
+      } else {
+        alert(`Failed to create team: ${result.message}`);
+      }
+    } catch (error) {
+      alert('Something went wrong while creating the team.');
+      console.error('Error creating team:', error);
+    }
   };
 
   const filteredMembers = allMembers.filter(user => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     const isAlreadyMember = teamMembers.some(member => member.userID === user.userID);
     const isCurrentUser = user.userID === uID;
-    return !isCurrentUser && !isAlreadyMember && fullName.includes(search.toLowerCase());
+
+    const validBatch = crossBatch
+      ? user.passingYear === leadPassingYear
+      : user.passingYear === leadPassingYear && user.batch === leadBatch;
+
+    return !isCurrentUser && !isAlreadyMember && fullName.includes(search.toLowerCase()) && validBatch;
   });
 
   return (
     <div>
-      <Topbar title='Team Creator Wizard'/>
-      <div className="team-creation-container">
-        <div className="input-group">
-          <label>Team Name:</label>
-          <input value={teamName} onChange={e => setTeamName(e.target.value)} />
-          <label>ID:</label>
-          <input value={teamID} readOnly />
-        </div>
+      <Topbar title='Team Creator Wizard' />
+      <div className='mstt'>
+        <div className="team-creation-container">
+          <div className="input-group">
+            <label>Team Name:</label>
+            <input value={teamName} onChange={e => setTeamName(e.target.value)} />
+            <label>Team ID:</label>
+            <input value={teamID} readOnly />
+            <label>Allow Cross-Batch Selection:</label>
+            <input
+              type="checkbox"
+              checked={crossBatch}
+              onChange={() => setCrossBatch(!crossBatch)}
+            />
+          </div>
 
-        <div className="tables-wrapper1">
-          <div className="search-table1">
-            <div className='test'>
-              <h3>Search</h3>
+          <div className="tables-wrapper1">
+            <div className="search-table1">
+              <h3>Search Students</h3>
               <input
-                className='test1'
-                placeholder="Search name..."
+                placeholder="Search by name..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
               />
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredMembers.map(user => (
-                  <tr key={user.userID}>
-                    <td>{user.userID}</td>
-                    <td>{user.firstName} {user.lastName}</td>
-                    <td>
-                      <button className="action-button" onClick={() => handleAddMember(user)}>+</button>
-                    </td>
-                  </tr>
-                ))}
-                {filteredMembers.length === 0 && (
+              <table>
+                <thead>
                   <tr>
-                    <td colSpan="3">No matching users found.</td>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Batch</th>
+                    <th>Action</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredMembers.map(user => (
+                    <tr key={user.userID}>
+                      <td>{user.userID}</td>
+                      <td>{user.firstName} {user.lastName}</td>
+                      <td>EN{user.batch}</td>
+                      <td>
+                        <button className="action-button" onClick={() => handleAddMember(user)}>+</button>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredMembers.length === 0 && (
+                    <tr><td colSpan="4">No matching users found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="members-table">
+              <h3>Team Members</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teamMembers.map(member => (
+                    <tr key={member.userID}>
+                      <td>{member.userID}</td>
+                      <td>{member.firstName} {member.lastName}</td>
+                      <td>{member.role}</td>
+                      <td>
+                        {member.userID !== uID && (
+                          <button className="action-button remove" onClick={() => handleRemoveMember(member.userID)}>×</button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div className="members-table">
-            <h3>Team Members</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Role</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teamMembers.map(member => (
-                  <tr key={member.userID}>
-                    <td>{member.userID}</td>
-                    <td>{member.firstName} {member.lastName}</td>
-                    <td>{member.role}</td>
-                    <td>
-                      {member.userID !== uID && (
-                        <button className="action-button" onClick={() => handleRemoveMember(member.userID)}>X</button>
-
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <button className="create-team-btn" onClick={handleCreateTeam}>
+            Create Team
+          </button>
         </div>
-
-        <button className="create-team-btn" onClick={handleCreateTeam}>
-          Create Team
-        </button>
       </div>
     </div>
   );

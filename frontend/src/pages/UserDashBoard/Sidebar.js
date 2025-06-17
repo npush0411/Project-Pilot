@@ -44,7 +44,7 @@ function Sidebar() {
 
   // Navigation handlers
   const handleTeamCreator = () => navigate('/create-team');
-  const handleProjectCreator = () => navigate('/create-project');
+  const handleProjectCreator = () => navigate('/create-project?new=true');
   const handleMyProjects = () => navigate('/my-projects');
   const handleProfile = () => navigate('/profile');
 

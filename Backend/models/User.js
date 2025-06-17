@@ -60,6 +60,15 @@ const userSchema = new mongoose.Schema({
     otp:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"OTP"
+    },
+    batch:{
+        type:Number //1 -> EN1, 2 -> EN2, 3-> EN3, 4 -> EN4, 5 -> EN5, 6 -> EN6
+    },
+    passingYear:{
+        type:Number
+    },
+    year:{
+        type:Number //1 -> 1st , 2 -> 2nd, 3 -> 3rd, 4 -> 4th
     }
 });
 

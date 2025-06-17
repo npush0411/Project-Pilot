@@ -1,6 +1,18 @@
+/* RequirementManager.css */
+
 .req-container {
-  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   font-family: Arial, sans-serif;
+}
+
+.mstt {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  margin-top: 5rem; /* Adjust if TopBarWithLogo is absolutely/fixed positioned */
 }
 
 h2, h3 {
@@ -40,7 +52,8 @@ th, td {
   border: 1px solid #ccc;
 }
 
-.entry-row button {
+.entry-row button,
+.req-entry button {
   padding: 6px 12px;
   background-color: #007bff;
   color: white;
@@ -49,7 +62,8 @@ th, td {
   cursor: pointer;
 }
 
-.entry-row button:hover {
+.entry-row button:hover,
+.req-entry button:hover {
   background-color: #0056b3;
 }
 
@@ -58,6 +72,7 @@ th, td {
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 8px;
+  background-color: #fafafa;
 }
 
 .error {
@@ -67,28 +82,21 @@ th, td {
 
 .req-actions {
   margin-top: 20px;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .place-order {
-  margin-left: 20px;
   background-color: #ffcc00;
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-}
-.req-cart button {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+  color: #333;
+  font-weight: 600;
 }
 
-.req-cart button:hover {
-  background-color: #d63031;
-}
-.remove-btn {
+.req-cart button.remove-btn {
   background: none;
   border: none;
   color: red;
@@ -98,10 +106,15 @@ th, td {
   font-size: 1.1rem;
 }
 
-.remove-btn:hover {
+.req-cart button.remove-btn:hover {
   text-decoration: underline;
 }
 
-.mstt{
-  margin-top:5rem;
+.edit-banner {
+  padding: 10px;
+  background-color: #ffeeba;
+  border: 1px solid #ffdd57;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 1rem;
 }

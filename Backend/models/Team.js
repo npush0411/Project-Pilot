@@ -27,6 +27,9 @@ const teamSchema = new mongoose.Schema({
         type: String,
         enum: ['Lead', 'Member'],
         default: 'Member'
+      },
+      batch:{
+        type:Number
       }
     }
   ]

@@ -67,29 +67,42 @@ exports.sendOTP = async (req, res) => {
    }
 }
 
-//SignUp
 exports.signUp = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, cPassword, accountType, contactNumber, userID } = req.body;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            cPassword,
+            accountType,
+            contactNumber,
+            userID,
+            batch,
+            passingYear,
+            academicYear,
+        } = req.body;
 
-        if (!firstName || !lastName || !email || !password || !cPassword || !accountType || !contactNumber || !userID) {
-            return res.status(400).json({ success: false, message: "All fields are required!" });
+        // Always-required fields
+        if (
+            !firstName || !lastName || !email || !password || !cPassword ||
+            !accountType || !contactNumber || !userID
+        ) {
+            return res.status(400).json({ success: false, message: "All mandatory fields are required!" });
+        }
+
+        // Conditional fields for Student
+        if (accountType === 'Student') {
+            if (!batch || !passingYear || !academicYear) {
+                return res.status(400).json({ success: false, message: "Student-specific fields are required!" });
+            }
         }
 
         if (password !== cPassword) {
             return res.status(400).json({ success: false, message: "Passwords do not match!" });
         }
 
-        // const permission = await Controls.find({});
-        // if(!permission.createUser)
-        // {
-        //     return res.status(400).json({
-        //         success:false,
-        //         message:"User Creation is not Permitted ! Please Contact Admin !"
-        //     });
-        // }
-
-        const exist = await User.findOne({ userID });
+        const exist = await User.findOne({ userID: Number(userID) });
         if (exist) {
             return res.status(409).json({ success: false, message: "User ID already taken!" });
         }
@@ -102,28 +115,27 @@ exports.signUp = async (req, res) => {
             dateOfBirth: null,
             contactNo: null,
         });
-        const eotp = otpGenerator.generate(6, {
-            upperCaseAlphabets:true,
-            lowerCaseAlphabets:false,
-            specialChars:false
-        });
-        const motp = otpGenerator.generate(6, {
-            upperCaseAlphabets: false,
-            lowerCaseAlphabets:true,
-            specialChars:true
-        });
 
-        const user = await User.create({
+        const userData = {
             firstName,
             lastName,
             email,
-            userID,
+            userID: Number(userID),
             password: hashedPassword,
             accountType,
-            contactNumber,
+            contactNumber, // keep as string
             additionalDetail: profile._id,
-            image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`
-        });
+            image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
+        };
+
+        // Add student fields only if role is Student
+        if (accountType === 'Student') {
+            userData.batch = parseInt(batch.replace("EN-", ""));
+            userData.passingYear = Number(passingYear);
+            userData.year = parseInt(academicYear);
+        }
+
+        const user = await User.create(userData);
 
         return res.status(200).json({
             success: true,
@@ -136,6 +148,7 @@ exports.signUp = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error!" });
     }
 };
+
 
 //Login
 exports.login = async (req, res) => {
@@ -294,7 +307,7 @@ exports.getCurrentUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.status(200).json({ success:true, data:{ID:user.userID, name: `${user.firstName} ${user.lastName}`} });
+    res.status(200).json({ success:true, data:{ID:user.userID, name: `${user.firstName} ${user.lastName}`, batch:user.batch, passingYear:user.passingYear} });
   } catch (error) {
     console.error("getCurrentUser error:", error);
     res.status(500).json({ message: 'Internal server error' });

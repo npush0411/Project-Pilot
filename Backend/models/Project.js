@@ -41,12 +41,26 @@ const prjSchema = new mongoose.Schema({
                 type:Boolean,
                 required:true,
                 default:false
-            }
-            // entryMade:{
-            //     type:Boolean,
-            //     required:true,
-            //     default:false
-            // }
+            },
+            //Talking about these two !
+            fullfilled:{
+                type:Boolean
+            },
+            
+            fullfilledQty:{
+                type:Number
+            },
+            carts:[
+                {
+                    cartID:{
+                        type:String
+                    },
+                    fullfilledQty:{
+                        type: Number
+                    }
+
+                }
+            ]
         }
     ],
     componentRejections: [
@@ -87,6 +101,9 @@ const prjSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    batch:{
+        type:Number
+    },
     appMan:{
         type:Boolean,
         default:false
@@ -104,6 +121,14 @@ const prjSchema = new mongoose.Schema({
     type:{
         type:String,
         required:true
+    },
+    slot:{
+        slotn:{
+            type:Number
+        },
+        date:{
+            type:Date
+        }
     }
 });
 

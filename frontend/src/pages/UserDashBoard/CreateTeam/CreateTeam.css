@@ -1,134 +1,100 @@
 .team-creation-container {
-  max-width: 900px;
-  margin: auto;
-  margin-top: 10vh;
-  padding: 2rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
+  padding: 30px;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f9f9f9;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 1rem;
+  background-color: #f9f9fb;
 }
 
 .input-group {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
 }
 
 .input-group label {
   font-weight: bold;
+  margin-top: 10px;
 }
 
- input {
-  padding: 0.5rem;
-  border-radius: 6px;
+.input-group input[type="text"],
+.input-group input[type="checkbox"],
+.input-group input {
+  padding: 8px;
   border: 1px solid #ccc;
-  min-width: 150px;
+  border-radius: 6px;
 }
 
 .tables-wrapper1 {
   display: flex;
-  gap: 2rem;
+  gap: 30px;
   flex-wrap: wrap;
-  justify-content: space-between;
+  margin-top: 20px;
 }
 
-.search-table1, .members-table {
+.search-table1,
+.members-table {
   flex: 1;
-  min-width: 300px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
 }
 
-table {
+.search-table1 table,
+.members-table table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0.5rem;
+  margin-top: 10px;
 }
 
-th, td {
-  padding: 0.6rem;
-  text-align: center;
+table th,
+table td {
   border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
 }
 
-button {
-  padding: 0.3rem 0.6rem;
+table th {
+  background-color: #f0f4f9;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.action-button {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-select {
-  padding: 0.3rem;
-  border-radius: 4px;
-}
-
-.create-team-btn {
-  margin-top: 1.5rem;
-  padding: 0.8rem 1.5rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  display: block;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-footer {
-  margin-top: 2rem;
-  text-align: center;
-  color: #777;
-}
-
-.test{
-  display: flex;
-  flex-direction: row;
-}
-.test1{
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  min-width: 150px;
-  height: fit-content;
-  margin: 1rem;
-}
-/* Center buttons inside their table cells */
-.search-table table td,
-.members-table table td {
-  text-align: center;
-  vertical-align: middle; /* optional, to vertically center */
-  horizontal-align:middle;
-}
-
-/* Optional: make buttons inline-block for better centering */
-.search-table table td button,
-.members-table table td button {
-  display: inline-block;
-}
-/* Styles specifically for action buttons */
-.action-button {
-  background-color: #28a745; /* Bootstrap green */
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  padding: 4px 10px;
-  border: none;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  transition: background-color 0.2s ease;
+.action-button.remove {
+  background-color: #e74c3c;
 }
 
 .action-button:hover {
+  opacity: 0.9;
+}
+
+.create-team-btn {
+  margin-top: 20px;
+  background-color: #28a745;
+  color: white;
+  padding: 12px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.create-team-btn:hover {
   background-color: #218838;
 }

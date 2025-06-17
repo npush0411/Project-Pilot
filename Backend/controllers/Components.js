@@ -1,7 +1,8 @@
 const Component = require('../models/Component');
 const MidOrder = require('../models/MidOrder');
 const Project = require('../models/Project');
-
+const ReqTable = require('../models/ReqTable');
+const Cart = require('../models/Cart');
 // GET: Retrieve all components
 exports.getAllComponents = async (req, res) => {
     try {
@@ -202,80 +203,91 @@ exports.makeAvailable = async (req, res) => {
         });
     }
 };
-
 const getRequiredOrder = async () => {
-    try {
-        // Step 1: Map to accumulate total required quantities
-        const reqMap = new Map(); // key: component ID, value: { name, totalQty }
+  try {
+    const reqMap = new Map(); // { ID: { name, reqty } }
 
-        const approvedProjects = await Project.find({
-            approved: true,
-            isCompleted: false,
-        });
+    const projects = await Project.find({
+      approved: true,
+      isCompleted: false
+    });
 
-        for (const project of approvedProjects) {
-            for (const cmp of project.components) {
-                if (cmp.accepted) {
-                    const existing = reqMap.get(cmp.id);
-                    if (existing) {
-                        existing.reqty += cmp.quantity;
-                    } else {
-                        reqMap.set(cmp.id, {
-                            name: cmp.name,
-                            reqty: cmp.quantity,
-                        });
-                    }
-                }
+    for (const prj of projects) {
+      for (const cmp of prj.components) {
+        if (cmp.accepted && !cmp.fullfilled) {
+          const existing = reqMap.get(cmp.id);
+          const remaining = cmp.quantity - (cmp.fulfilledQty || 0);
+
+          if (remaining > 0) {
+            if (existing) {
+              existing.reqty += remaining;
+            } else {
+              reqMap.set(cmp.id, {
+                name: cmp.name,
+                reqty: remaining
+              });
             }
+          }
         }
-
-        // Step 2: Delete existing MidOrders
-        await MidOrder.deleteMany({});
-
-        // Step 3: Create new MidOrders based on accumulated data
-        for (const [id, data] of reqMap.entries()) {
-            const com = await Component.findOne({ cID: id });
-            const available = com?.qnty || 0;
-            const toOrder = Math.max(data.reqty - available, 0);
-
-            const newEntry = new MidOrder({
-                ID: id,
-                name: data.name,
-                reqty: data.reqty,
-                available,
-                toOrder,
-            });
-
-            await newEntry.save();
-        }
-
-        const allMidOrders = await MidOrder.find();
-
-        return {
-            success: true,
-            message: "MidOrder updated successfully.",
-            midOrders: allMidOrders,
-        };
-    } catch (error) {
-        console.error("Error in getRequiredOrder:", error);
-        return {
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        };
+      }
     }
+
+    await MidOrder.deleteMany({});
+
+    for (const [id, data] of reqMap.entries()) {
+      const com = await Component.findOne({ cID: id });
+      const available = com?.qnty || 0;
+
+      // Check if existing ordered data is in backup MidOrders (optional if keeping cache)
+      const existing = await MidOrder.findOne({ ID: id });
+      const ordered = existing?.ordered || 0;
+
+      const toOrder = Math.max(data.reqty - available - ordered, 0);
+
+      const newEntry = new MidOrder({
+        ID: id,
+        name: data.name,
+        reqty: data.reqty,
+        available,
+        ordered,
+        toOrder
+      });
+
+      await newEntry.save();
+    }
+
+    const allMidOrders = await MidOrder.find();
+    return {
+      success: true,
+      message: 'MidOrder generated.',
+      midOrders: allMidOrders
+    };
+
+  } catch (error) {
+    console.error("Error in getRequiredOrder:", error);
+    return {
+      success: false,
+      message: 'Error generating mid order',
+      error: error.message
+    };
+  }
 };
 
+// Controller function
 exports.getMidOrder = async () => {
-    try {
-        const result = await getRequiredOrder();
-
-        
-    } catch (error) {
-        console.error("Error in getMidOrder:", error);
-        
-    }
+  try {
+    const result = await getRequiredOrder();
+    // return res.status(200).json({result});
+  } catch (error) {
+    console.error("Error in getMidOrder:", error);
+    // return res.status(500).json({
+    //   success: false,
+    //   message: "Failed to get MidOrder",
+    //   error: error.message
+    // });
+  }
 };
+
 
 
 exports.generateOrder = async (req, res) => {
@@ -373,67 +385,204 @@ exports.fetchMidOrder = async (req, res) => {
     }
 };
 
+// const Project = require('../models/Project');
+// const MidOrder = require('../models/MidOrder');
 
 exports.updateMidOrder = async (req, res) => {
   try {
-    const { updatedReqs } = req.body;
+    const { updatedReqs, cartID } = req.body;
 
-    if (!updatedReqs || !Array.isArray(updatedReqs)) {
-      return res.status(400).json({ success: false, message: 'Invalid or missing updatedReqs array' });
+    if (!updatedReqs || !Array.isArray(updatedReqs) || !cartID) {
+      return res.status(400).json({ success: false, message: 'Invalid or missing data.' });
     }
 
-    // Extract valid IDs from frontend
-    const incomingIds = updatedReqs
-      .filter(item => item._id) // only items with _id
-      .map(item => item._id.toString());
-
-    // Step 1: Get all existing mid orders
-    const existingDocs = await MidOrder.find({});
-    const existingIds = existingDocs.map(doc => doc._id.toString());
-
-    // Step 2: Determine which IDs to delete (present in DB, but not in frontend)
-    const idsToDelete = existingIds.filter(id => !incomingIds.includes(id));
-    await MidOrder.deleteMany({ _id: { $in: idsToDelete } });
-
-    // Step 3: Update existing and insert new ones
     const upsertedDocs = [];
 
     for (const item of updatedReqs) {
-      if (item._id) {
-        // Try updating existing document
-        const updated = await MidOrder.findByIdAndUpdate(
-          item._id,
-          {
-            ID: item.ID,
-            name: item.name,
-            reqty: item.reqty,
-            available: item.available,
-            toOrder: item.toOrder
-          },
-          { new: true }
-        );
-        if (updated) {
-          upsertedDocs.push(updated);
-        } else {
-          // In case _id is invalid, create new
-          const created = await MidOrder.create(item);
-          upsertedDocs.push(created);
-        }
-      } else {
-        // No _id: insert as new
-        const created = await MidOrder.create(item);
-        upsertedDocs.push(created);
+      const { ID, toOrder } = item;
+
+      if (typeof ID !== 'string' || typeof toOrder !== 'number') continue;
+
+      // Get existing mid-order
+      const existing = await MidOrder.findOne({ ID });
+
+      if (!existing) {
+        const newMid = await MidOrder.create({
+          ID,
+          name: item.name || "Unknown",
+          reqty: 0,
+          available: 0,
+          ordered: 0,
+          toOrder: toOrder
+        });
+        upsertedDocs.push(newMid);
+        continue;
       }
+
+      const prevToOrder = existing.toOrder || 0;
+      const fulfilledNow = Math.max(0, prevToOrder - toOrder);
+
+      let remainingQty = fulfilledNow;
+
+      // Find all active projects requesting this component
+      const allProjects = await Project.find({
+        approved: true,
+        isCompleted: false,
+        "components": {
+          $elemMatch: {
+            id: ID,
+            accepted: true
+          }
+        }
+      });
+
+      // Manually filter projects where qty is still remaining
+      const projects = allProjects.filter(project =>
+        project.components.some(
+          cmp =>
+            cmp.id === ID &&
+            cmp.accepted &&
+            (cmp.fullfilledQty || 0) < (cmp.quantity || 0)
+        )
+      );
+
+      for (const project of projects) {
+        let updated = false;
+
+        for (const cmp of project.components) {
+          if (cmp.id === ID && cmp.accepted) {
+            // Total already fulfilled from all carts
+            const totalFulfilled = (cmp.carts || []).reduce((sum, c) => sum + (c.fullfilledQty || 0), 0);
+            const needed = cmp.quantity - totalFulfilled;
+
+            if (needed <= 0) continue;
+
+            const toGive = Math.min(needed, remainingQty);
+
+            // Initialize carts array
+            cmp.carts = cmp.carts || [];
+
+            // Check if cart already exists
+            const existingCart = cmp.carts.find(c => c.cartID === cartID);
+
+            if (existingCart) {
+              existingCart.fullfilledQty += toGive;
+            } else {
+              cmp.carts.push({ cartID, fullfilledQty: toGive });
+            }
+
+            // Recompute total fulfilledQty after update
+            const newTotalFulfilled = cmp.carts.reduce((sum, c) => sum + (c.fullfilledQty || 0), 0);
+            cmp.fullfilledQty = newTotalFulfilled;
+            cmp.fullfilled = newTotalFulfilled >= cmp.quantity;
+
+            remainingQty -= toGive;
+            updated = true;
+          }
+
+          if (remainingQty <= 0) break;
+        }
+
+        if (updated) {
+          await project.save();
+        }
+
+        if (remainingQty <= 0) break;
+      }
+
+      const actualFulfilled = fulfilledNow - remainingQty;
+      const newOrdered = (existing.ordered || 0) + actualFulfilled;
+
+      const newToOrder = Math.max(existing.reqty - existing.available - newOrdered, 0);
+
+      const updatedMid = await MidOrder.findOneAndUpdate(
+        { ID },
+        {
+          $set: {
+            ordered: newOrdered,
+            toOrder: newToOrder
+          }
+        },
+        { new: true }
+      );
+
+      upsertedDocs.push(updatedMid);
     }
 
     return res.status(200).json({
       success: true,
-      message: 'MidOrders synced successfully',
+      message: 'MidOrders and project components updated with partial fulfillment',
       data: upsertedDocs
     });
 
   } catch (error) {
     console.error('Error updating mid orders:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};
+
+
+exports.getReqTable = async (req, res) => {
+    try{
+        const data = await ReqTable.find({});
+        return res.status(200).json({
+            success:true, 
+            message:"Done",
+            data
+        });
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({
+            success:false,
+            message:"Unable !"
+        });
+    }
+};
+
+
+// POST: Create a new component
+exports.createComponentInForm = async (req, res) => {
+  try {
+    console.log("Inside Create Component !");
+    const { name, cID, description, price, quantity, image } = req.body;
+
+    // Check if a component with the same ID already exists
+    const existingComponent = await Component.findOne({ cID });
+
+    if (existingComponent) {
+      return res.status(400).json({
+        success: false,
+        message: "Component ID isn't available! Please try again."
+      });
+    }
+
+    // Create and save new component
+    const newComponent = new Component({
+      title: name,
+      cID,
+      description,
+      qnty: quantity,
+      price,
+      image: image || ''  // Optional: fallback to empty string if not provided
+    });
+
+    console.log(newComponent);
+    const savedComponent = await newComponent.save();
+
+    res.status(201).json({
+      success: true,
+      component: savedComponent
+    });
+
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to create component",
+      error: error.message
+    });
   }
 };

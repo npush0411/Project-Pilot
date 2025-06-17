@@ -1,0 +1,104 @@
+.assign-container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.assign-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.input-group label {
+  font-weight: bold;
+}
+
+.input-group select,
+.input-group input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.slot-card-container {
+  margin-bottom: 2rem;
+}
+
+.slot-cards {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.slot-card {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.slot-card:hover {
+  border-color: #007bff;
+}
+
+.slot-card.selected {
+  background: #007bff;
+  color: #fff;
+  border-color: #0056b3;
+}
+
+.project-table, .confirmation-table {
+  margin-top: 2rem;
+}
+
+.project-table table, .confirmation-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.project-table th, .confirmation-table th,
+.project-table td, .confirmation-table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.project-table th, .confirmation-table th {
+  background-color: #f0f0f0;
+}
+
+.assign-btn {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background 0.3s ease;
+}
+
+.assign-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.assign-btn:hover:not(:disabled) {
+  background: #218838;
+}

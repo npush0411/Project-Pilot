@@ -5,9 +5,7 @@ import AppRoutes from './routes/routes'; // your route configuration
 function App() {
   
   return (
-   
       <AppRoutes />
-
   );
 }
 

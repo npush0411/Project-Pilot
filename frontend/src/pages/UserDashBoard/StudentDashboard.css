@@ -14,3 +14,14 @@ body, html, #root {
   display: flex;
   flex-direction: column;
 }
+
+.mstt1{
+  margin-top: 5rem;
+}
+/* Prevent scrolling on the entire app */
+html, body, #root, .app-container {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}

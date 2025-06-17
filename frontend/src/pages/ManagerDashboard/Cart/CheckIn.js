@@ -58,10 +58,19 @@ const CheckIn = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.put(`${BASE_URL}/cart/checkin/${cart.ID}`, {
-        checkInDate: new Date(),
-        details
-      });
+     await axios.put(
+  `${BASE_URL}/cart/checkin/${cart.ID}`,
+  {
+    checkInDate: new Date(),
+    details
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  }
+);
+
       alert('Cart checked in successfully');
       navigate('/viewcarts');
     } catch (err) {
@@ -69,7 +78,7 @@ const CheckIn = () => {
       alert('Failed to check in cart');
     }
   };
-
+  
   return (
     <div className="checkin-container">
       <h2>Check In - Cart ID: {cart?.ID}</h2>

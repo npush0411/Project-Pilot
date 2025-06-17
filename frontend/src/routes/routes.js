@@ -26,7 +26,7 @@ import Order from '../pages/ManagerDashboard/Cart/Order';
 import CheckIn from '../pages/ManagerDashboard/Cart/CheckIn';
 import RequirementManager from '../pages/ManagerDashboard/Cart/RequirementManager';
 import CreateComponent from '../pages/ManagerDashboard/Components/CreateComponent';
-
+import AssignSlots from '../pages/ManagerDashboard/Distribution/AssignSlots';
 const AppRoutes = () => (
   <Routes>
     {/* Public Routes */}
@@ -64,7 +64,7 @@ const AppRoutes = () => (
     <Route path='/cart-order/:cartID' element={<PrivateRoutes><Order/></PrivateRoutes>}/>
     <Route path="/cart-check-in/:id" element={<PrivateRoutes><CheckIn/></PrivateRoutes>} />
     <Route path='/create-component' element={<PrivateRoutes><CreateComponent/></PrivateRoutes>}/>
-    
+    <Route path='/assign-slot' element={<PrivateRoutes><AssignSlots/></PrivateRoutes>}/>
     <Route path="*" element={<UnderConstruction />} />
   </Routes>
 );

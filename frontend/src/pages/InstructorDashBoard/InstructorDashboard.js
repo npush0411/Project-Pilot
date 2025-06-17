@@ -22,11 +22,10 @@ const InstructorDashboard = () => {
           'Content-Type': 'application/json',
           'authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ approved :isApproved }),
+        body: JSON.stringify({ approved: isApproved }),
       });
 
       if (!response.ok) {
-        
         throw new Error('Failed to update approval status');
       }
 
@@ -89,22 +88,27 @@ const InstructorDashboard = () => {
             <p>No projects found.</p>
           ) : (
             projects
-            .filter((project) => project.isApproved !== true)
-            .map((project, index) => (
-              <Card
-                key={project.ID || index}
-                title={project.title}
-                projectID={project.ID}
-                description={project.description}
-                components={project.components}
-                team={project.team.teamID}
-                guideID={project.projectGuide?.userID || 'N/A'}
-                guideName={project.projectGuide?.firstName +' ' + project.projectGuide.lastName || 'Unknown'}
-                createdAt={project.createdAt}
-                onApprove={() => onApprove(project)}
-                onDeny={() => onDeny(project)}
-              />
-            ))
+              .filter((project) => project.isApproved !== true)
+              .map((project, index) => (
+                <Card
+                  key={project.ID || index}
+                  title={project.title}
+                  projectID={project.ID}
+                  description={project.description}
+                  components={project.components}
+                  team={project.team?.teamID || 'N/A'}
+                  guideID={project.projectGuide?.userID || 'N/A'}
+                  guideName={
+                    project.projectGuide
+                      ? `${project.projectGuide.firstName} ${project.projectGuide.lastName}`
+                      : 'Unknown'
+                  }
+                  createdAt={project.createdAt}
+                  status={project.status ?? 0} // Pass status safely
+                  onApprove={() => onApprove(project)}
+                  onDeny={() => onDeny(project)}
+                />
+              ))
           )}
         </div>
       </div>

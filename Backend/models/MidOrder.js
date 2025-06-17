@@ -23,6 +23,10 @@ const mid = new mongoose.Schema({
     type:Number,
     required:true,
     default:0
+  },
+  ordered:{
+    type:Number,
+    default:0
   }
 });
 

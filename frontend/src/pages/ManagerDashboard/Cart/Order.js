@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CreateVendor from './CreateVendor';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import logo from '../../../images/logo.png'; // replace with correct path
+import logo from '../../../images/logo.png';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -14,6 +14,8 @@ const Order = () => {
   const { cartID } = useParams();
   const [vendorID, setVendorID] = useState('');
   const [vendorName, setVendorName] = useState('');
+  const [vendorList, setVendorList] = useState([]);
+  const [filteredVendors, setFilteredVendors] = useState([]);
   const [cart, setCart] = useState(null);
   const [showCreateVendor, setShowCreateVendor] = useState(false);
   const [showPDFNotice, setShowPDFNotice] = useState(false);
@@ -21,28 +23,57 @@ const Order = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      const url = `${BASE_URL}/get-cart/${cartID}`;
-
-      console.log(url);
       try {
-        const res = await axios.get(url, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-
+        const res = await axios.get(`${BASE_URL}/get-cart/${cartID}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setCart(res.data.data);
       } catch (err) {
         console.error('Error fetching cart:', err);
       }
     };
+
+    const fetchVendors = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/get-all-vendors`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        setVendorList(res.data.vnds || []);
+      } catch (err) {
+        console.error('Error fetching vendors:', err);
+      }
+    };
+
     fetchCart();
+    fetchVendors();
   }, [cartID]);
 
-  const handleVendorCreated = (id, name) => {
-    setVendorID(id);
-    setVendorName(name);
-    setShowCreateVendor(false);
+  const handleOrder = async () => {
+    await generatePDF();
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.put(
+        `${BASE_URL}/order-cart`,
+        {
+          vendorID,
+          vendorName,
+          orderDate: new Date(),
+          cartId: cartID
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+      if (res.data.success) {
+        setShowPDFNotice(true);
+        setTimeout(() => navigate('/manager-dashboard'), 5000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Order failed.');
+    }
   };
 
   const generatePDF = async () => {
@@ -63,7 +94,7 @@ const Order = () => {
       const img = new Image();
       img.src = logo;
 
-      img.onload = async () => {
+      img.onload = () => {
         doc.addImage(img, 'PNG', 14, 10, 28, 28);
         doc.setFont('Times', 'Bold');
         doc.setFontSize(14);
@@ -73,7 +104,6 @@ const Order = () => {
         doc.setFontSize(12);
         doc.text('Walchand College of Engineering, Sangli', 45, 23);
         doc.text('416416, Maharashtra, India', 45, 30);
-
         doc.setFontSize(11);
         doc.text(`Date: ${new Date().toLocaleDateString()}`, 160, 30, { align: 'right' });
         doc.setDrawColor(100);
@@ -120,7 +150,6 @@ const Order = () => {
         });
 
         const afterTableY = doc.lastAutoTable.finalY + 10;
-
         doc.text(
           'We assure you that the components will be utilized solely for academic and research purposes.',
           14,
@@ -134,7 +163,6 @@ const Order = () => {
 
         doc.text('Thank you.', 14, afterTableY + 18);
         doc.text('Sincerely,', 14, afterTableY + 26);
-
         doc.setFont('Times', 'Bold');
         doc.text(`${senderName}`, 14, afterTableY + 33);
         doc.setFont('Times', 'Normal');
@@ -149,7 +177,6 @@ const Order = () => {
         doc.setFontSize(11);
         doc.text('Head of Department', 30, signatureY + 6);
         doc.text('Dept. of Electronics Engg.', 30, signatureY + 12);
-
         doc.text('Director', 130, signatureY + 6);
         doc.text('Walchand College of Engineering', 130, signatureY + 12);
         doc.text('Sangli', 130, signatureY + 18);
@@ -166,31 +193,22 @@ const Order = () => {
     }
   };
 
-  const handleOrder = async () => {
-    await generatePDF(); // Generate PDF first
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.put(
-  `${BASE_URL}/order-cart`,
-  {
-    vendorID,
-    vendorName,
-    orderDate: new Date(),
-    cartId:cartID
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`, // or just token: token if your backend expects that
-    },
-  }
-);
-      if (res.data.success) {
-        setShowPDFNotice(true);
-        setTimeout(() => navigate('/manager-dashboard'), 5000);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Order failed.');
+  const handleVendorChange = (e) => {
+    const input = e.target.value;
+    setVendorID(input);
+
+    const filtered = vendorList.filter(
+      (v) =>
+        v.ID.toLowerCase().includes(input.toLowerCase()) ||
+        v.name.toLowerCase().includes(input.toLowerCase())
+    );
+    setFilteredVendors(filtered);
+
+    const selected = filtered.find((v) => v.ID.toLowerCase() === input.toLowerCase());
+    if (selected) {
+      setVendorName(selected.name);
+    } else {
+      setVendorName('');
     }
   };
 
@@ -199,18 +217,70 @@ const Order = () => {
   return (
     <div className="order-container">
       <h2>Order Cart - {cart.ID}</h2>
+
       <div className="vendor-section">
-        <label>Vendor ID:</label>
+        <label htmlFor="vendor-search">Select Vendor:</label>
         <input
+          id="vendor-search"
           type="text"
+          className="vendor-search-input"
           value={vendorID}
-          onChange={(e) => setVendorID(e.target.value)}
-          placeholder="Enter Vendor ID"
+          placeholder="Search Vendor by ID or Name"
+          onChange={handleVendorChange}
+          onBlur={() => setTimeout(() => setFilteredVendors([]), 150)}
+          onFocus={() =>
+            setFilteredVendors(
+              vendorList.filter(
+                (v) =>
+                  v.ID.toLowerCase().includes(vendorID.toLowerCase()) ||
+                  v.name.toLowerCase().includes(vendorID.toLowerCase())
+              )
+            )
+          }
+          autoComplete="off"
         />
-        <button onClick={() => setShowCreateVendor(true)}>Create Vendor</button>
+
+        {filteredVendors.length > 0 && (
+          <ul className="vendor-suggestions">
+            {filteredVendors.map((vendor) => (
+              <li
+                key={vendor.ID}
+                onClick={() => {
+                  setVendorID(vendor.ID);
+                  setVendorName(vendor.name);
+                  setFilteredVendors([]);
+                }}
+              >
+                <strong>{vendor.ID}</strong> – {vendor.name}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {vendorName && <div className="vendor-name">Vendor: {vendorName}</div>}
+        {!vendorName && vendorID && (
+          <div className="vendor-error">Invalid Vendor ID. Please choose from the list.</div>
+        )}
+
+        <p className="create-vendor-link">
+          Can’t find vendor?{' '}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowCreateVendor(true);
+            }}
+          >
+            Create Vendor
+          </a>
+        </p>
       </div>
 
-      {showCreateVendor && <CreateVendor onVendorCreated={handleVendorCreated} />}
+      {showCreateVendor && <CreateVendor onVendorCreated={(id, name) => {
+        setVendorID(id);
+        setVendorName(name);
+        setShowCreateVendor(false);
+      }} />}
 
       <div className="order-summary">
         <h3>Order Summary</h3>

@@ -49,3 +49,20 @@ exports.createVendor = async (req, res) => {
     });
   }
 };
+
+
+exports.getAllVendors = async (req, res) => {
+  try{
+    const vnds = await Vendor.find({});
+    return res.status(201).json({
+      success:true, 
+      vnds
+    });
+  }catch(error){
+    console.log(error);
+      return res.status(500).json({
+        success:false,
+        message:"Internal Server Error"
+      });
+    }
+};

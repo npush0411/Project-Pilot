@@ -4,7 +4,7 @@ const User = require("../models/User");
 const Component = require("../models/Component");
 const Team = require("../models/Team");
 const { getMidOrder } = require("./Components");
-
+const ReqTable = require('../models/ReqTable');
 exports.createProject = async (req, res) => {
   try {
     const { ID, type, title, description, components, teamID, guideID } = req.body;
@@ -67,6 +67,7 @@ exports.createProject = async (req, res) => {
       return res.status(400).json({ message: "Guide must be an Instructor." });
     }
 
+    const lead = teamDoc.members.find(member => member.role === 'Lead');
     
     // Step 8: Create Project
     const newProject = new Project({
@@ -76,7 +77,8 @@ exports.createProject = async (req, res) => {
       description,
       components,
       teamID:teamDoc._id, 
-      guideID:guideDoc._id
+      guideID:guideDoc._id,
+      batch:lead.batch
     });
 
 
@@ -98,12 +100,13 @@ exports.createProject = async (req, res) => {
 
     return res.status(201).json({
       message: "Project created successfully.",
-      project: savedProject
+      project: savedProject,
+      success:true
     });
 
   } catch (error) {
     console.error("Error creating project:", error);
-    return res.status(500).json({ message: "Server error while creating project.", error});
+    return res.status(500).json({ success:false,message: "Server error while creating project.", error});
   }
 };
 
@@ -236,7 +239,6 @@ exports.updateProjectApproval = async (req, res) => {
   }
 };
 
-
 exports.updateProjectComponents = async (req, res) => {
   const { projectId } = req.params;
   const { updatedComponents, remark } = req.body;
@@ -252,41 +254,49 @@ exports.updateProjectComponents = async (req, res) => {
     let total = 0;
     let acceptedCount = 0;
 
-    // Update each component's 'accepted' value
+    // Loop through each component of the project
     project.components = project.components.map(comp => {
       const update = updatedComponents.find(u => u.id === comp.id);
       if (update) {
-        comp.accepted = update.accepted;
         total++;
+        comp.accepted = update.accepted;
+
         if (update.accepted) {
           acceptedCount++;
+
+          // Reset fullfillment tracking
+          comp.fullfilled = false;
+          comp.fullfilledQty = 0;
+          comp.carts = [];
         } else {
-          rejectedIds.push(update.id);
+          rejectedIds.push(comp.id);
         }
       }
       return comp;
     });
 
-    // Push rejection remark if there are any rejected components and remark is given
+    // Push rejection remark if present
     if (rejectedIds.length > 0 && remark?.trim()) {
       project.componentRejections.push({
-        remark: remark,
+        remark,
         componentIds: rejectedIds
       });
     }
 
-    // Determine and update status
+    // Update project status
     if (acceptedCount === total) {
       project.status = 2; // All accepted
     } else if (acceptedCount === 0) {
       project.status = 9; // All rejected
     } else {
-      project.status = 11; // Some accepted, some rejected
+      project.status = 11; // Mixed
     }
 
-    
     await project.save();
+
+    // Regenerate MidOrder from updated project data
     getMidOrder();
+
     return res.status(200).json({ success: true, message: "Project components updated." });
   } catch (err) {
     console.error(err);
