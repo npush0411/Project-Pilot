@@ -303,3 +303,33 @@ exports.updateProjectComponents = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
+
+exports.projectReturn = async (req, res) => {
+  try{
+    const updatedProject = req.body;
+    const prjdoc = await Project.findById(updatedProject._id);
+    for(cmp of updatedProject.components)
+    {
+      console.log(cmp);
+      const component = await Component.findOne({cID:cmp.id});
+      console.log(component);
+      component.qnty += cmp.returnMemo.returnQuantity;
+      component.save();
+    }
+    prjdoc.components = updatedProject.components;
+    prjdoc.isCompleted = true;
+    prjdoc.completedAt = new Date();
+    prjdoc.save();
+    return res.status(200).json({
+      success:true,
+      message:"Projects Updated Successfully !"
+    })
+  }catch (error) {
+    console.error("Project return failed:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while processing return",
+    });
+  }
+}

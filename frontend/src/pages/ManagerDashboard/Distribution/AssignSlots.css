@@ -1,104 +1,196 @@
+/* AssignSlots.css */
+
+/* The main scrollable container, fills the screen below fixed topbar */
 .assign-container {
-  max-width: 1000px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: fixed;
+  top: 60px; /* Adjust this based on your TopbarWithLogo height */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  background-color: #f4f6f8;
+  padding: 20px;
+  z-index: 1;
+}
+
+/* Inner content box */
+.masst {
+  max-width: 1200px;
   margin: auto;
-  padding: 2rem;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 50px;
 }
 
-.assign-container h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
+/* Input group for date */
 .input-group {
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
-  gap: 1rem;
+  gap: 12px;
 }
 
 .input-group label {
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
 }
 
-.input-group select,
-.input-group input {
-  padding: 0.5rem;
+.input-group input[type="date"] {
+  padding: 6px 12px;
+  font-size: 15px;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
 
+/* Slot card section */
 .slot-card-container {
-  margin-bottom: 2rem;
+  margin: 20px 0;
+}
+
+.slot-card-container label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 10px;
+  color: #444;
 }
 
 .slot-cards {
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 12px;
 }
 
 .slot-card {
-  background: #f5f5f5;
-  padding: 1rem;
+  padding: 10px 16px;
+  background-color: #e4e7ec;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
   border: 2px solid transparent;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .slot-card:hover {
-  border-color: #007bff;
+  background-color: #d0d7de;
 }
 
 .slot-card.selected {
-  background: #007bff;
+  background-color: #007bff;
   color: #fff;
   border-color: #0056b3;
 }
 
-.project-table, .confirmation-table {
-  margin-top: 2rem;
+/* Project table */
+.project-table {
+  margin-top: 30px;
 }
 
-.project-table table, .confirmation-table table {
+.project-table h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #fff;
+  margin-top: 10px;
 }
 
-.project-table th, .confirmation-table th,
-.project-table td, .confirmation-table td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
-  text-align: center;
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-.project-table th, .confirmation-table th {
-  background-color: #f0f0f0;
+th {
+  background-color: #f2f4f7;
+  font-weight: 600;
+  color: #333;
 }
 
-.assign-btn {
-  margin-top: 2rem;
-  padding: 0.75rem 1.5rem;
-  background: #28a745;
+td button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #007bff;
   color: white;
   border: none;
-  font-weight: bold;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  transition: background 0.3s ease;
+  transition: background-color 0.2s ease-in-out;
 }
 
+td button:hover {
+  background-color: #0056b3;
+}
+
+/* Selected projects summary table */
+.confirmation-table {
+  margin-top: 40px;
+  background-color: #f9fbfc;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #dee2e6;
+}
+
+.confirmation-table h4 {
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.remove-btn {
+  background-color: #dc3545;
+}
+
+.remove-btn:hover {
+  background-color: #b02a37;
+}
+
+/* Submit button */
+.assign-btnn {
+  margin-top: 30px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto; /* 👈 Center horizontally */
+}
+
+
 .assign-btn:disabled {
-  background: #aaa;
+  background-color: #94d3a2;
   cursor: not-allowed;
 }
 
 .assign-btn:hover:not(:disabled) {
-  background: #218838;
+  background-color: #218838;
+}
+
+/* Scrollbar customization (optional) */
+.assign-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.assign-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.assign-container::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 10px;
+}
+
+.masst{
+  margin-top: 2rem;
 }

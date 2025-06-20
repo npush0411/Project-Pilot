@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import './RequirementManager.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -14,11 +14,32 @@ const RequirementManager = () => {
   const [initialMidOrders, setInitialMidOrders] = useState([]);
   const [masterComponents, setMasterComponents] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [newEntry, setNewEntry] = useState({ ID: '', name: '', quantity: '' });
+  const [newEntry, setNewEntry] = useState({ ID: 'TCR', name: '', quantity: '' });
   const [error, setError] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [isNameLocked, setIsNameLocked] = useState(false);
-
   const token = localStorage.getItem('token');
+
+  const nameInputRef = useRef();
+  const suggestionRef = useRef();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightIndex, setHighlightIndex] = useState(-1);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        suggestionRef.current &&
+        !suggestionRef.current.contains(event.target) &&
+        !nameInputRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     fetchInitialData();
@@ -54,113 +75,164 @@ const RequirementManager = () => {
     }
   };
 
-  const handleIDChange = (value) => {
-    const ID = value.trim().toUpperCase();
-    const reqMatch = midOrders.find(item => item.ID === ID);
-    const compMatch = masterComponents.find(c => c.cID === ID);
+  const handleNameChange = (value) => {
+    const name = value;
+    setNewEntry(prev => ({ ...prev, name, quantity: prev.quantity }));
+    setError('');
 
-    let name = '';
-    let lock = false;
+    const filtered = [...masterComponents, ...midOrders]
+      .filter(item =>
+        (item.name || item.title || '').includes(name)
+      )
+      .slice(0, 5);
+    setSuggestions(filtered);
 
-    if (reqMatch) {
-      name = reqMatch.name;
-      lock = true;
-    } else if (compMatch) {
-      name = compMatch.title;
-      lock = true;
+    const exactReq = midOrders.find(item => item.name === name);
+    const exactMaster = masterComponents.find(item => item.title === name);
+
+    if (exactReq) {
+      setNewEntry(prev => ({ ...prev, ID: exactReq.ID }));
+      setIsNameLocked(true);
+    } else if (exactMaster) {
+      setNewEntry(prev => ({ ...prev, ID: exactMaster.cID }));
+      setIsNameLocked(true);
+    } else {
+      setNewEntry(prev => ({ ...prev, ID: 'TCR' }));
+      setIsNameLocked(false);
     }
+  };
 
-    setNewEntry(prev => ({ ...prev, ID, name }));
-    setIsNameLocked(lock);
+  const handleSuggestionClick = (name) => {
+    handleNameChange(name);
+    setSuggestions([]);
   };
 
   const handleAddEntry = () => {
-    const { ID, name, quantity } = newEntry;
-    if (!ID || !quantity) return setError('Please enter ID and quantity.');
+  const { ID, name, quantity } = newEntry;
+  if (!name || !quantity) return setError('Please enter name and quantity.');
 
-    let updatedMidOrders = [...midOrders];
-    const existing = updatedMidOrders.find(item => item.ID === ID);
-    const masterMatch = masterComponents.find(c => c.cID === ID);
-    const isNewComponent = !existing && !masterMatch;
+  const enteredQty = parseInt(quantity);
+  if (enteredQty <= 0 || isNaN(enteredQty)) {
+    return setError('Please enter a valid positive quantity.');
+  }
 
-    const resolvedName = existing?.name || masterMatch?.title || name;
+  let updatedMidOrders = [...midOrders];
+  const existing = updatedMidOrders.find(item => item.ID === ID);
+  const masterMatch = masterComponents.find(c => c.cID === ID);
+  const isNewComponent = ID === 'TCR';
 
-    if (!resolvedName && isNewComponent) {
-      return setError('Please enter name for new component.');
+  const resolvedName = existing?.name || masterMatch?.title || name;
+
+  if (!resolvedName && isNewComponent) {
+    return setError('Please enter a valid name for the new component.');
+  }
+
+  if (!isNewComponent && cartItems.some(c => c.ID === ID)) {
+    return setError('Duplicate ID entry is not allowed.');
+  }
+
+  let source = 'new';
+  if (existing) source = 'requirement';
+  else if (masterMatch) source = 'manual';
+
+  if (existing) {
+    const updatedQty = Math.min(enteredQty, existing.toOrder);
+    updatedMidOrders = updatedMidOrders.map(item =>
+      item.ID === ID
+        ? {
+            ...item,
+            toOrder: item.toOrder - updatedQty,
+            ordered: (item.ordered || 0) + updatedQty
+          }
+        : item
+    ).filter(item => item.toOrder > 0);
+  }
+
+  if (isNewComponent) {
+    alert('New component not found in system. Entry will be saved with ID "TCR".\nYou have to create component while checkIn');
+  }
+
+  setCartItems(prev => [
+    ...prev,
+    {
+      ID: isNewComponent ? 'TCR' : ID,
+      Name: resolvedName,
+      orderedQuantity: enteredQty,
+      __source: source  // Internal tag for restore logic
     }
+  ]);
 
-    if (!isNewComponent && cartItems.some(c => c.ID === ID)) {
-      return setError('Duplicate ID entry is not allowed.');
-    }
+  setMidOrders(updatedMidOrders);
+  setNewEntry({ ID: '', name: '', quantity: '' });
+  setIsNameLocked(false);
+  setSuggestions([]);
+  setError('');
+};
 
-    const enteredQty = parseInt(quantity);
-
-    if (existing) {
-      const updatedQty = Math.min(enteredQty, existing.toOrder);
-      updatedMidOrders = updatedMidOrders.map(item =>
-        item.ID === ID
-          ? {
-              ...item,
-              toOrder: item.toOrder - updatedQty,
-              ordered: (item.ordered || 0) + updatedQty
-            }
-          : item
-      ).filter(item => item.toOrder > 0);
-    }
-
-    if (isNewComponent) {
-      alert('New component not found in system. Entry will be saved with ID "TCR".\nYou have to create component while checkIn');
-    }
-
-    setCartItems(prev => [
-      ...prev,
-      {
-        ID: isNewComponent ? 'TCR' : ID,
-        Name: resolvedName,
-        orderedQuantity: enteredQty
-      }
-    ]);
-
-    setMidOrders(updatedMidOrders);
-    setNewEntry({ ID: '', name: '', quantity: '' });
-    setIsNameLocked(false);
-    setError('');
-  };
 
   const handleRemoveEntry = (index) => {
-    const itemToRemove = cartItems[index];
-    const updatedCart = [...cartItems];
-    updatedCart.splice(index, 1);
+  const itemToRemove = cartItems[index];
+  const updatedCart = [...cartItems];
+  updatedCart.splice(index, 1);
 
-    if (itemToRemove.ID !== 'TCR') {
-      const original = initialMidOrders.find(item => item.ID === itemToRemove.ID);
-      if (original) {
-        const alreadyExists = midOrders.find(item => item.ID === original.ID);
-        if (alreadyExists) {
-          setMidOrders(midOrders.map(item =>
-            item.ID === original.ID
-              ? {
-                  ...item,
-                  toOrder: item.toOrder + itemToRemove.orderedQuantity,
-                  ordered: Math.max((item.ordered || 0) - itemToRemove.orderedQuantity, 0)
-                }
-              : item
-          ));
-        } else {
-          setMidOrders([
-            ...midOrders,
-            {
-              ...original,
-              toOrder: itemToRemove.orderedQuantity,
-              ordered: Math.max((original.ordered || 0) - itemToRemove.orderedQuantity, 0)
-            }
-          ]);
-        }
+  const source = itemToRemove.__source;
+
+  if (source === 'requirement') {
+    const original = initialMidOrders.find(item => item.ID === itemToRemove.ID);
+    if (original) {
+      const alreadyExists = midOrders.find(item => item.ID === original.ID);
+      if (alreadyExists) {
+        setMidOrders(midOrders.map(item =>
+          item.ID === original.ID
+            ? {
+                ...item,
+                toOrder: item.toOrder + itemToRemove.orderedQuantity,
+                ordered: Math.max((item.ordered || 0) - itemToRemove.orderedQuantity, 0)
+              }
+            : item
+        ));
+      } else {
+        setMidOrders([
+          ...midOrders,
+          {
+            ...original,
+            toOrder: itemToRemove.orderedQuantity,
+            ordered: Math.max((original.ordered || 0) - itemToRemove.orderedQuantity, 0)
+          }
+        ]);
       }
     }
+  } else if (source === 'manual') {
+    const master = masterComponents.find(c => c.cID === itemToRemove.ID);
+    setMidOrders(prev => [
+      ...prev,
+      {
+        ID: itemToRemove.ID,
+        name: itemToRemove.Name,
+        reqty: 0,
+        available: master.qnty || 0,
+        ordered: 0,
+        toOrder: itemToRemove.orderedQuantity
+      }
+    ]);
+  } else {
+    // source === 'new'
+    setMidOrders(prev => [
+      ...prev,
+      {
+        ID: itemToRemove.ID,
+        name: itemToRemove.Name,
+        reqty: 0,
+        available: 0,
+        ordered: 0,
+        toOrder: itemToRemove.orderedQuantity
+      }
+    ]);
+  }
 
-    setCartItems(updatedCart);
-  };
+  setCartItems(updatedCart);
+};
+
 
   const handleSaveCart = async () => {
     try {
@@ -176,7 +248,8 @@ const RequirementManager = () => {
           orderDate: cart.orderDate || undefined,
           checkInDate: cart.checkInDate || undefined,
           token: token,
-          details: cartItems
+          details: cartItems.map(({ __source, ...rest }) => rest)
+
         };
 
         res2 = await axios.put(`${BASE_URL}/update-cart`, updatedCart, {
@@ -225,7 +298,6 @@ const RequirementManager = () => {
       alert(`Cart ${editMode ? 'updated' : 'created'} and requirement table saved successfully!`);
       setCartItems([]);
       navigate(-1);
-
     } catch (err) {
       console.error(err);
       alert(`Failed to ${editMode ? 'update' : 'save'} cart.`);
@@ -289,18 +361,54 @@ const RequirementManager = () => {
 
         <div className="req-entry">
           <h3>Add Entry</h3>
-          <div className="entry-row">
-            <input
-              placeholder="ID"
-              value={newEntry.ID}
-              onChange={e => handleIDChange(e.target.value)}
-            />
-            <input
-              placeholder="Name"
-              value={newEntry.name}
-              onChange={e => setNewEntry({ ...newEntry, name: e.target.value })}
-              disabled={isNameLocked}
-            />
+          <div className="entry-row" style={{ position: 'relative' }}>
+            <input placeholder="ID" value={newEntry.ID} readOnly />
+            <div className="suggestion-wrapper" ref={suggestionRef}>
+              <input
+                ref={nameInputRef}
+                className="req-input"
+                placeholder="Name"
+                value={newEntry.name}
+                onFocus={() => setShowSuggestions(true)}
+                onChange={(e) => {
+                  handleNameChange(e.target.value);
+                  setShowSuggestions(true);
+                  setHighlightIndex(-1);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowDown') {
+                    setHighlightIndex((prev) => (prev + 1) % suggestions.length);
+                  } else if (e.key === 'ArrowUp') {
+                    setHighlightIndex((prev) =>
+                      (prev - 1 + suggestions.length) % suggestions.length
+                    );
+                  } else if (e.key === 'Enter' && highlightIndex >= 0) {
+                    e.preventDefault();
+                    const selected = suggestions[highlightIndex];
+                    handleSuggestionClick(selected.name || selected.title);
+                    setHighlightIndex(-1);
+                    setShowSuggestions(false);
+                  }
+                }}
+              />
+              {showSuggestions && suggestions.length > 0 && newEntry.name.trim() && (
+                <ul className="suggestion-list">
+                  {suggestions.map((s, i) => (
+                    <li
+                      key={i}
+                      onClick={() => {
+                        handleSuggestionClick(s.name || s.title);
+                        setShowSuggestions(false);
+                      }}
+                      className={i === highlightIndex ? 'highlight' : ''}
+                    >
+                      {s.name || s.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
             <input
               placeholder="Quantity"
               type="number"

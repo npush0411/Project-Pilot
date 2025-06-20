@@ -15,7 +15,8 @@ const ManagerDashboard = () => {
     { name: 'View Carts', path: '/view-carts', triggerGenerate: true },
     { name: 'Create Component', path: '/create-component'},
     { name: 'Assign Slots', path:'/assign-slot'},
-    { name: 'Distribute Components', path:'/check-out'}
+    { name: 'Distribute Components', path:'/check-out'},
+    { name: 'Check-In', path:'/check-in'}
   ];
 
   const handleNavigation = async (feature) => {

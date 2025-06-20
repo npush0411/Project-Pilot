@@ -8,7 +8,7 @@ const { auth, authorizeRole } = require('../middlewares');
 const { login, signUp, verifyOTP, getCurrentUser, verifyToken } = require("../controllers/Auth");
 
 // Project Controllers
-const { createProject, getAllProjects, getAllUsers, getUserProjects, updateProjectApproval, updateProjectComponents } = require("../controllers/Project");
+const { createProject, getAllProjects, getAllUsers, getUserProjects, updateProjectApproval, updateProjectComponents, projectReturn } = require("../controllers/Project");
 
 // Component controllers
 const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable, getRequiredOrder, getMidOrder, createOrder, fetchMidOrder, updateMidOrder, getReqTable, createComponentInForm} = require("../controllers/Components");
@@ -20,6 +20,7 @@ const { createCart, getCarts, orderCart, getCart, updateCart, checkInCart } = re
 const {createVendor, getAllVendors} = require('../controllers/Vendor');
 
 
+const { addToSlot, getTokenProject, updateDelivery, checkInVerify } = require('../controllers/Distribution');
 // --- Auth Routes ---
 router.post("/login", login);
 router.post("/signup", signUp);
@@ -63,7 +64,11 @@ router.put("/order-cart", auth, orderCart);
 router.get("/get-cart/:cartID", auth, getCart);
 router.put("/update-cart", auth, updateCart);
 router.put('/cart/checkin/:id', auth, checkInCart);
-
+router.put('/add-to-slots', auth, addToSlot);
+router.get('/verify/get-project/:token', auth, getTokenProject);
+router.post('/verify/success', auth, updateDelivery);
+router.put('/check-in/verify', auth, checkInVerify);
+router.put('/check-in/project', auth, projectReturn);
 // --- Vendor Routes ---
 router.post("/create-vendor", auth, createVendor);
 

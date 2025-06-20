@@ -9,6 +9,7 @@ import InstructorDashboard from '../pages/InstructorDashBoard/InstructorDashboar
 import LoginFailed from '../pages/Authentication/LogFail';
 import SignSuc from '../pages/signSuc';
 import SignFail from '../pages/signFail';
+import CheckInLand from '../pages/ManagerDashboard/Cart/CheckInLand';
 import PageNotFound from '../pages/PageNotFound';
 import UnderConstruction from '../pages/UnderConstruction';
 import CreateTeam from '../pages/UserDashBoard/CreateTeam/CreateTeam';
@@ -27,6 +28,9 @@ import CheckIn from '../pages/ManagerDashboard/Cart/CheckIn';
 import RequirementManager from '../pages/ManagerDashboard/Cart/RequirementManager';
 import CreateComponent from '../pages/ManagerDashboard/Components/CreateComponent';
 import AssignSlots from '../pages/ManagerDashboard/Distribution/AssignSlots';
+import Distribute from '../pages/ManagerDashboard/Distribution/Distribute';
+import VerifyDelivery from '../pages/ManagerDashboard/Distribution/VerifyDelivery';
+import ProjectCheckIn from '../pages/ManagerDashboard/Cart/ProjectCheckIn';
 const AppRoutes = () => (
   <Routes>
     {/* Public Routes */}
@@ -63,8 +67,12 @@ const AppRoutes = () => (
     <Route path='/view-carts' element={<PrivateRoutes><ViewCarts/></PrivateRoutes>}/>
     <Route path='/cart-order/:cartID' element={<PrivateRoutes><Order/></PrivateRoutes>}/>
     <Route path="/cart-check-in/:id" element={<PrivateRoutes><CheckIn/></PrivateRoutes>} />
+    <Route path='/check-in' element={<PrivateRoutes><CheckInLand/></PrivateRoutes>}/>
     <Route path='/create-component' element={<PrivateRoutes><CreateComponent/></PrivateRoutes>}/>
     <Route path='/assign-slot' element={<PrivateRoutes><AssignSlots/></PrivateRoutes>}/>
+    <Route path='/check-out' element={<PrivateRoutes><Distribute/></PrivateRoutes>}/>
+    <Route path="/student/acknowledgement/:projectID/:token" element={<VerifyDelivery />} />
+    <Route path='/project-in' element={<PrivateRoutes><ProjectCheckIn/></PrivateRoutes>}/>
     <Route path="*" element={<UnderConstruction />} />
   </Routes>
 );

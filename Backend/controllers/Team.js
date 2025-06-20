@@ -27,10 +27,17 @@ exports.createTeam = async (req, res) => {
       };
     }));
 
+    const leadU = validMembers
+  .filter(member => member.role === 'Lead')
+  .map(lead => lead.userID);
+
+  const leadUser = await User.find({userID:leadU});
+
     const newTeam = await Team.create({
       teamName,
       teamID,
-      members: validMembers
+      members: validMembers,
+      batch:leadUser.batch
     });
 
     res.status(201).json({

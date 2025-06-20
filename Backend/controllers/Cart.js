@@ -1,6 +1,11 @@
 const Cart = require('../models/Cart'); // adjust path as needed
 const jwt = require('jsonwebtoken');
 const Component = require('../models/Component');
+const Project = require('../models/Project');
+const Team = require('../models/Team');
+const User = require('../models/User');
+// Use your configured mail utility
+const sendMail = require('../utils/mailSender'); // Adjust path accordingly
 require('dotenv').config();
 
 // JWT Secret (store securely in .env)

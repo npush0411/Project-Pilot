@@ -213,106 +213,110 @@ const Order = () => {
   };
 
   if (!cart) return <div className="order-container">Loading...</div>;
+return (
+  <div className="order-container">
+    <h2>Order Cart - {cart.ID}</h2>
 
-  return (
-    <div className="order-container">
-      <h2>Order Cart - {cart.ID}</h2>
-
-      <div className="vendor-section">
-        <label htmlFor="vendor-search">Select Vendor:</label>
-        <input
-          id="vendor-search"
-          type="text"
-          className="vendor-search-input"
-          value={vendorID}
-          placeholder="Search Vendor by ID or Name"
-          onChange={handleVendorChange}
-          onBlur={() => setTimeout(() => setFilteredVendors([]), 150)}
-          onFocus={() =>
-            setFilteredVendors(
-              vendorList.filter(
-                (v) =>
-                  v.ID.toLowerCase().includes(vendorID.toLowerCase()) ||
-                  v.name.toLowerCase().includes(vendorID.toLowerCase())
-              )
+    <div className="vendor-section">
+      <label htmlFor="vendor-search">Select Vendor:</label>
+      <input
+        id="vendor-search"
+        type="text"
+        className="vendor-search-input"
+        value={vendorID}
+        placeholder="Search Vendor by ID or Name"
+        onChange={handleVendorChange}
+        onBlur={() => setTimeout(() => setFilteredVendors([]), 150)}
+        onFocus={() =>
+          setFilteredVendors(
+            vendorList.filter(
+              (v) =>
+                v.ID.toLowerCase().includes(vendorID.toLowerCase()) ||
+                v.name.toLowerCase().includes(vendorID.toLowerCase())
             )
-          }
-          autoComplete="off"
-        />
+          )
+        }
+        autoComplete="off"
+      />
 
-        {filteredVendors.length > 0 && (
-          <ul className="vendor-suggestions">
-            {filteredVendors.map((vendor) => (
-              <li
-                key={vendor.ID}
-                onClick={() => {
-                  setVendorID(vendor.ID);
-                  setVendorName(vendor.name);
-                  setFilteredVendors([]);
-                }}
-              >
-                <strong>{vendor.ID}</strong> – {vendor.name}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {vendorName && <div className="vendor-name">Vendor: {vendorName}</div>}
-        {!vendorName && vendorID && (
-          <div className="vendor-error">Invalid Vendor ID. Please choose from the list.</div>
-        )}
-
-        <p className="create-vendor-link">
-          Can’t find vendor?{' '}
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowCreateVendor(true);
-            }}
-          >
-            Create Vendor
-          </a>
-        </p>
-      </div>
-
-      {showCreateVendor && <CreateVendor onVendorCreated={(id, name) => {
-        setVendorID(id);
-        setVendorName(name);
-        setShowCreateVendor(false);
-      }} />}
-
-      <div className="order-summary">
-        <h3>Order Summary</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart.details.map((item, i) => (
-              <tr key={i}>
-                <td>{item.ID}</td>
-                <td>{item.Name}</td>
-                <td>{item.orderedQuantity}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="actions">
-          <button onClick={generatePDF}>Get PDF</button>
-          <button onClick={handleOrder}>Order</button>
-        </div>
-      </div>
-
-      {showPDFNotice && (
-        <div className="pdf-notice">Downloading PDF... Redirecting to dashboard</div>
+      {filteredVendors.length > 0 && (
+        <ul className="vendor-suggestions">
+          {filteredVendors.map((vendor) => (
+            <li
+              key={vendor.ID}
+              onMouseDown={() => {
+                setVendorID(vendor.ID);
+                setVendorName(vendor.name);
+                setFilteredVendors([]);
+              }}
+            >
+              <strong>{vendor.ID}</strong> – {vendor.name}
+            </li>
+          ))}
+        </ul>
       )}
+
+      {vendorName && <div className="vendor-name">Vendor: {vendorName}</div>}
+      {!vendorName && vendorID && (
+        <div className="vendor-error">Invalid Vendor ID. Please choose from the list.</div>
+      )}
+
+      <p className="create-vendor-link">
+        Can’t find vendor?{' '}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setShowCreateVendor(true);
+          }}
+        >
+          Create Vendor
+        </a>
+      </p>
     </div>
-  );
+
+    {showCreateVendor && (
+      <CreateVendor
+        onVendorCreated={(id, name) => {
+          setVendorID(id);
+          setVendorName(name);
+          setShowCreateVendor(false);
+        }}
+      />
+    )}
+
+    <div className="order-summary">
+      <h3>Order Summary</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cart.details.map((item, i) => (
+            <tr key={i}>
+              <td>{item.ID}</td>
+              <td>{item.Name}</td>
+              <td>{item.orderedQuantity}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="actions">
+        <button onClick={generatePDF}>Get PDF</button>
+        <button onClick={handleOrder}>Order</button>
+      </div>
+    </div>
+
+    {showPDFNotice && (
+      <div className="pdf-notice">Downloading PDF... Redirecting to dashboard</div>
+    )}
+  </div>
+);
+
 };
 
 export default Order;

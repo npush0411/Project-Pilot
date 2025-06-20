@@ -46,9 +46,19 @@ const prjSchema = new mongoose.Schema({
             fullfilled:{
                 type:Boolean
             },
-            
+            receiveMemo:{
+                receivedQantity:{
+                    type:Number
+                },
+                remark:{
+                    type:String
+                }
+            },
             fullfilledQty:{
                 type:Number
+            },
+            allReceived:{
+                type:Boolean
             },
             carts:[
                 {
@@ -60,7 +70,15 @@ const prjSchema = new mongoose.Schema({
                     }
 
                 }
-            ]
+            ],
+            returnMemo:{
+                returnQuantity:{
+                    type:Number
+                },
+                remark:{
+                    type:Number
+                }
+            }
         }
     ],
     componentRejections: [
@@ -122,6 +140,9 @@ const prjSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    slotAssigned:{
+        type:Boolean
+    },
     slot:{
         slotn:{
             type:Number
@@ -129,6 +150,10 @@ const prjSchema = new mongoose.Schema({
         date:{
             type:Date
         }
+    },
+    ack:{
+        type:Number,
+        default:-1
     }
 });
 

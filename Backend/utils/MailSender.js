@@ -1,28 +1,28 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-const sendVerificationEmail = async (email, message) => {
-    try {
-        const transporter = nodemailer.createTransport({
-            service: 'Gmail', // or Mailgun, SES, etc.
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
+const mailSender = async (email, subject, body) => {
+  try {
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.MAIL_ID,
+        pass: process.env.MAIL_PASS,
+      },
+    });
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Your OTP for StudyNotion',
-            text: message,
-        };
+    let info = await transporter.sendMail({
+      from: `"Component Slot Manager" <${process.env.MAIL_ID}>`,
+      to: email,
+      subject: subject,
+      html: body,
+    });
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent:', info.response);
-    } catch (err) {
-        console.error('Failed to send verification email:', err);
-        throw err;
-    }
+    return info;
+  } catch (error) {
+    console.error("Error in sending email:", error);
+    throw error;
+  }
 };
 
-module.exports = sendVerificationEmail;
+module.exports = mailSender;
