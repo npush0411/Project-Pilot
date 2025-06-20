@@ -19,7 +19,7 @@ import SuccessPage from '../pages/SuccessPage';
 // import ProjectsAssociated from '../pages/ProjectsAssociated';
 // import ManControls from '../pages/ManControls';
 import PrivateRoutes from './PrivateRoutes';
-import Search from '../pages/ManagerDashboard/Components/Search';
+import Inventory from '../pages/ManagerDashboard/Components/Inventory';
 import ProjectDashboard from '../pages/ManagerDashboard/Projects/ProjectDashboard';
 // import CreateCart from '../pages/ManagerDashboard/CreateCart';
 import ViewCarts from '../pages/ManagerDashboard/Cart/ViewCarts';
@@ -62,7 +62,7 @@ const AppRoutes = () => (
     {/* Instructor Routes */}
 
     {/*Managet Routes */}
-    <Route path='/search-components' element={<PrivateRoutes><Search/></PrivateRoutes>}/>
+    <Route path='/search-components' element={<PrivateRoutes><Inventory/></PrivateRoutes>}/>
     <Route path='/get-order' element={<PrivateRoutes><RequirementManager/></PrivateRoutes>}/>
     <Route path='/view-carts' element={<PrivateRoutes><ViewCarts/></PrivateRoutes>}/>
     <Route path='/cart-order/:cartID' element={<PrivateRoutes><Order/></PrivateRoutes>}/>
