@@ -8,11 +8,11 @@ const { auth, authorizeRole } = require('../middlewares');
 const { login, signUp, verifyOTP, getCurrentUser, verifyToken } = require("../controllers/Auth");
 
 // Project Controllers
-const { createProject, getAllProjects, getAllUsers, getUserProjects, updateProjectApproval, updateProjectComponents, projectReturn } = require("../controllers/Project");
+const { createProject, getAllProjects, getAllUsers, getUserProjects, updateProjectApproval, updateProjectComponents, projectReturn, getGuidedProjects } = require("../controllers/Project");
 
 // Component controllers
 const {getAllComponents, deleteComponent, createComponent, getComponent, updateComponent, makeAvailable, getRequiredOrder, getMidOrder, createOrder, fetchMidOrder, updateMidOrder, getReqTable, createComponentInForm} = require("../controllers/Components");
-const { createTeam } = require('../controllers/Team');
+const { createTeam, getMyTeams } = require('../controllers/Team');
 
 //Cart Controllers
 const { createCart, getCarts, orderCart, getCart, updateCart, checkInCart } = require('../controllers/Cart');
@@ -40,12 +40,14 @@ router.put("/make-available/:cID", auth,  makeAvailable);
 router.get("/get", getReqTable);
 // --- Team Routes ---
 router.post("/create-team", auth,  createTeam);
+router.get('/get-my-teams/:token', auth, getMyTeams);
 
 // --- Project Routes ---
 router.post("/create-project",   createProject);
 router.get("/get-all-projects", auth, getAllProjects);
 router.get("/projects-me", auth,  getUserProjects);
 router.put("/:projectID/approval", auth, updateProjectApproval);
+router.get("/get-guided-projects", auth, getGuidedProjects);
 router.put('/update-project-components/:projectId', auth, updateProjectComponents);
 // Optional: Future Protected Controls
 // router.put("/get-controls", auth, authorizeRole("Instructor"), yourController);

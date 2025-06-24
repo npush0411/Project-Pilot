@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Topbar from '../Topbar';
+import TopBarWithLogo from '../TopBarWithLogo';
 import Form from './Form';
 const ProjectWizard = () => {
     return (
         <div>
-            <Topbar title="Project Wizard"/>
+            <TopBarWithLogo title='Project Creator Wizard'/>
             <Form/>
         </div>
     )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './ProjectDashboard.css';
-import Topbar from '../Topbar';
+import TopBarWithLogo from '../TopBarWithLogo';
+import NoProjects from '../../../images/NoProjects.jpg';
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const ProjectDashboard = () => {
@@ -11,6 +12,8 @@ const ProjectDashboard = () => {
   const [remark, setRemark] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'approved', 'not_approved'
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -21,7 +24,6 @@ const ProjectDashboard = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-
         const data = await response.json();
 
         if (data.success) {
@@ -119,6 +121,7 @@ const ProjectDashboard = () => {
             : `Rejected ${selectedComponents.length} component(s) with remark: "${remark}"`
         );
 
+        // Update the selected project components
         const newComponents = selectedProject.components.map(comp =>
           selectedComponents.includes(comp.id || comp._id)
             ? { ...comp, accepted: status }
@@ -138,7 +141,7 @@ const ProjectDashboard = () => {
         setSelectedComponents([]);
         setRemark('');
         setIsRejecting(false);
-        closeModal(); // ✅ Close modal after action
+        closeModal(); // Close modal after action
       } else {
         alert(data.message || 'Failed to update project components.');
       }
@@ -150,173 +153,176 @@ const ProjectDashboard = () => {
 
   const isProjectApproved = (components = []) =>
     components.length > 0 && components.every(comp => comp.accepted);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'approved', 'not_approved'
 
-  return (
-    <div className="project-dashboard">
-      <Topbar title='All Projects'/>
-      <div className='mst'>
-      <div className="controls">
-        <input
-          type="text"
-          placeholder="Search by Project ID, Name, or Team ID..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="filter-select"
-        >
-          <option value="all">All</option>
-          <option value="approved">Approved</option>
-          <option value="not_approved">Not Approved</option>
-        </select>
-      </div>
-
-      {loading ? (
-        <p>Loading projects...</p>
-      ) : error ? (
-        <p style={{ color: 'red' }}>{error}</p>
-      ) : (
-        <table className="project-table">
-          <thead>
-            <tr>
-              <th>Project ID</th>
-              <th>Project Name</th>
-              <th>Team ID</th>
-              <th>Approved</th>
-              <th>Guide Name</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-  {projects
-  .filter((proj) => {
-    // Filter based on search term
+  // Filter projects based on search term and selected filter status
+  const filteredProjects = projects.filter((proj) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       proj.ID.toLowerCase().includes(term) ||
       proj.title.toLowerCase().includes(term) ||
       (proj.teamID?.teamID?.toLowerCase() || '').includes(term);
 
-    // Filter based on approval status
     const isApproved = isProjectApproved(proj.components);
     if (filterStatus === 'approved' && !isApproved) return false;
     if (filterStatus === 'not_approved' && isApproved) return false;
 
     return matchesSearch;
-  })
-  .map((proj, index) => (
+  });
 
-    <tr key={index}>
-      <td>{proj.ID}</td>
-      <td>{proj.title}</td>
-      <td>{proj.teamID?.teamID || 'N/A'}</td>
-      <td style={{ fontWeight: 'bold', color: proj.approved ? 'green' : 'red' }}>
-        {proj.approved ? 'Yes' : 'No'}
-      </td>
-      <td>
-        {proj.guideID
-          ? `${proj.guideID.firstName} ${proj.guideID.lastName}`
-          : 'N/A'}
-      </td>
-      <td>
-        <button className="view-btn" onClick={() => handleViewDetails(proj)}>
-          View Details
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+  return (
+    <div className="project-dashboard1">
+      <TopBarWithLogo title='All Projects' />
+      <div className="mst1">
+        <div className="controls1">
+          <input
+            type="text"
+            placeholder="Search by Project ID, Name, or Team ID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input1"
+          />
 
-        </table>
-      )}
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="filter-select1"
+          >
+            <option value="all">All</option>
+            <option value="approved">Approved</option>
+            <option value="not_approved">Not Approved</option>
+          </select>
+        </div>
 
-      {selectedProject && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Component List - {selectedProject.title}</h3>
-            <table className="component-table">
-              <thead>
-                <tr>
-                  <th>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.8rem', marginBottom: '4px' }}>Select All</span>
-                      <input
-                        type="checkbox"
-                        checked={
-                          selectedComponents.length === selectedProject.components.length
-                        }
-                        onChange={handleSelectAll}
-                      />
-                    </div>
-                  </th>
-                  <th>Component ID</th>
-                  <th>Name</th>
-                  <th>Purpose</th>
-                  <th>Quantity</th>
-                  <th>Accepted</th>
+        {loading ? (
+          <p>Loading projects...</p>
+        ) : error ? (
+          <p style={{ color: 'red' }}>{error}</p>
+        ) : projects.length === 0 ? (
+          <div className="no-projects-container" style={{ textAlign: 'center' }}>
+            <img src={NoProjects} alt="No Projects" className="no-projects-image" style={{ maxWidth: '300px', marginBottom: '20px' }} />
+            <p>No projects available.</p>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="no-projects-container" style={{ textAlign: 'center' }}>
+            <p>No matching projects found.</p>
+          </div>
+        ) : (
+          <table className="project-table1">
+            <thead>
+              <tr>
+                <th>Project ID</th>
+                <th>Project Name</th>
+                <th>Team ID</th>
+                <th>Approved</th>
+                <th>Guide Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProjects.map((proj, index) => (
+                <tr key={index}>
+                  <td>{proj.ID}</td>
+                  <td>{proj.title}</td>
+                  <td>{proj.teamID?.teamID || 'N/A'}</td>
+                  <td style={{ fontWeight: 'bold', color: proj.approved ? 'green' : 'red' }}>
+                    {proj.approved ? 'Yes' : 'No'}
+                  </td>
+                  <td>
+                    {proj.guideID
+                      ? `${proj.guideID.firstName} ${proj.guideID.lastName}`
+                      : 'N/A'}
+                  </td>
+                  <td>
+                    <button className="view-btn1" onClick={() => handleViewDetails(proj)}>
+                      View Details
+                    </button>
+                  </td>
                 </tr>
-              </thead>
+              ))}
+            </tbody>
+          </table>
+        )}
 
-              <tbody>
-                {selectedProject.components.map((comp, idx) => {
-                  const compId = comp.id || comp._id;
-                  return (
-                    <tr key={idx}>
-                      <td>
+        {selectedProject && (
+          <div className="modal-overlay1" onClick={closeModal}>
+            <div className="modal-content1" onClick={(e) => e.stopPropagation()}>
+              <h3>Component List - {selectedProject.title}</h3>
+              <table className="component-table1">
+                <thead>
+                  <tr>
+                    <th>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.8rem', marginBottom: '4px' }}>Select All</span>
                         <input
                           type="checkbox"
-                          checked={selectedComponents.includes(compId)}
-                          onChange={() => handleCheckboxChange(compId)}
+                          checked={
+                            selectedComponents.length === selectedProject.components.length
+                          }
+                          onChange={handleSelectAll}
                         />
-                      </td>
-                      <td>{comp.id || 'N/A'}</td>
-                      <td>{comp.name}</td>
-                      <td>{comp.purpose}</td>
-                      <td>{comp.quantity}</td>
-                      <td>
-                        <span style={{ color: comp.accepted ? 'green' : 'red', fontWeight: 'bold' }}>
-                          {comp.accepted ? 'Yes' : 'No'}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </div>
+                    </th>
+                    <th>Component ID</th>
+                    <th>Name</th>
+                    <th>Purpose</th>
+                    <th>Quantity</th>
+                    <th>Accepted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedProject.components.map((comp, idx) => {
+                    const compId = comp.id || comp._id;
+                    return (
+                      <tr key={idx}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedComponents.includes(compId)}
+                            onChange={() => handleCheckboxChange(compId)}
+                          />
+                        </td>
+                        <td>{comp.id || 'N/A'}</td>
+                        <td>{comp.name}</td>
+                        <td>{comp.purpose}</td>
+                        <td>{comp.quantity}</td>
+                        <td>
+                          <span style={{ color: comp.accepted ? 'green' : 'red', fontWeight: 'bold' }}>
+                            {comp.accepted ? 'Yes' : 'No'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
 
-            <div className="modal-actions">
-              <button className="accept-btn" onClick={handleBulkAccept}>
-                Accept Selected
-              </button>
-              <button className="reject-btn" onClick={handleRejectClick}>
-                Reject Selected
-              </button>
-              <button className="close-btn" onClick={closeModal}>
-                Close
-              </button>
-            </div>
-
-            {isRejecting && (
-              <div className="remark-section">
-                <textarea
-                  placeholder="Enter rejection remark..."
-                  value={remark}
-                  onChange={(e) => setRemark(e.target.value)}
-                />
-                <button className="confirm-reject-btn" onClick={handleConfirmReject}>
-                  Confirm Reject
+              <div className="modal-actions1">
+                <button className="accept-btn1" onClick={handleBulkAccept}>
+                  Accept Selected
+                </button>
+                <button className="reject-btn1" onClick={handleRejectClick}>
+                  Reject Selected
+                </button>
+                <button className="close-btn1" onClick={closeModal}>
+                  Close
                 </button>
               </div>
-            )}
+
+              {isRejecting && (
+                <div className="remark-section">
+                  <textarea
+                    placeholder="Enter rejection remark..."
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                  />
+                  <button className="confirm-reject-btn1" onClick={handleConfirmReject}>
+                    Confirm Reject
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </div>
   );

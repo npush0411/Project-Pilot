@@ -36,15 +36,10 @@ function TopBarWithLogo({ title }) {
   const navigate = useNavigate();
 
   const sidebarActions = [
-    { name: 'Projects', path: '/all-projects' },
-    { name: 'Create Cart', path: '/get-order' },
-    { name: 'Component Info', path: '/search-components' },
-    { name: 'View Carts', path: '/view-carts', triggerGenerate: true },
-    { name: 'Create Component', path: '/create-component'},
-    { name: 'Assign Slots', path:'/assign-slot'},
-    { name: 'Distribute Components', path:'/check-out'},
-    { name: 'Check-In', path:'/check-in'},
-    { name: 'View Requirements', path:'/view-requirements/fetch'}
+    { name: 'Team Creator Wizard', path: '/create-team' },
+    { name: 'Project Creator Wizard', path: '/create-project?new=true' },
+    { name: 'My Projects', path: '/my-projects' },
+    { name: 'Teams', path: '/my-teams' }
   ];
 
   const handleLogout = () => {
@@ -52,7 +47,9 @@ function TopBarWithLogo({ title }) {
     navigate('/');
   };
 
-  
+  const handleProfile = () => {
+    navigate('/profile');
+  };
 
   const handleClickOutside = (e) => {
     if (sidebarOpen && sidebarRef.current && !sidebarRef.current.contains(e.target)) {
@@ -88,6 +85,9 @@ function TopBarWithLogo({ title }) {
             <p className="pnm1">{userName}</p>
             {dropdownOpen && (
               <div className="dropdown-content1">
+                {/* <button onClick={handleProfile}>
+                  <FaUserCircle className="icon1" /> Profile
+                </button> */}
                 <button onClick={handleLogout}>
                   <FaSignOutAlt className="icon1" /> Logout
                 </button>

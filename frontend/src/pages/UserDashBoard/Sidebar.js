@@ -46,7 +46,7 @@ function Sidebar() {
   const handleTeamCreator = () => navigate('/create-team');
   const handleProjectCreator = () => navigate('/create-project?new=true');
   const handleMyProjects = () => navigate('/my-projects');
-  const handleProfile = () => navigate('/profile');
+  const handleTeam = () => navigate('/my-teams');
 
   // Logout handler
   const handleLogout = async () => {
@@ -76,7 +76,8 @@ function Sidebar() {
           <hr />
           <button onClick={handleMyProjects}>My Projects</button>
           <hr/>
-          <button>Project Drafts</button>
+          <button onClick={handleTeam}>Teams</button>
+          <hr/>
         </div>
       </div>
 

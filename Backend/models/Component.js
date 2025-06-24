@@ -19,8 +19,9 @@ const comSchema = new mongoose.Schema({
     default: 0
   },
   price: {
-    type: String,
-    required: true
+    type: String
+    // required: true
+
   },
   minPurchace: {
     type: Number,

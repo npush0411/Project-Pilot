@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from '../../../images/logo.png';
+import NoDataFound from '../../../components/NoDataFound'; // ✅ Import NoDataFound
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -206,9 +207,9 @@ const ViewCarts = () => {
   return (
     <div className="view-carts-container11">
       <TopBarWithLogo title="All Carts" />
-      <div className='mstt'>
+      <div className="mstt">
         {carts.length === 0 ? (
-          <p>No carts available.</p>
+          <NoDataFound message="No carts available." />
         ) : (
           <table className="cart-table11">
             <thead>

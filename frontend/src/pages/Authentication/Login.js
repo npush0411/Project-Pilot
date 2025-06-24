@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logo from '../../images/logo.png';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Login() {
@@ -23,7 +24,6 @@ function Login() {
       });
 
       const data = await res.json();
-      // console.log(data);
       if (res.ok) {
         console.log(data);
         localStorage.setItem('token', data.token);
@@ -81,6 +81,12 @@ function Login() {
               required
             />
           </div>
+
+          {/* Forgot Password Link */}
+          <div className='forgot-password'>
+            <a href='/forgot-password'>Forgot Password?</a>
+          </div>
+
           <input type='submit' value='Login' />
         </form>
       </div>

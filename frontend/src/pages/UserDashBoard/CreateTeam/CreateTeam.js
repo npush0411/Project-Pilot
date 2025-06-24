@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CreateTeam.css';
 import Topbar from '../Topbar';
+import TopBarWithLogo from '../TopBarWithLogo';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -149,7 +150,7 @@ const CreateTeam = () => {
 
   return (
     <div>
-      <Topbar title='Team Creator Wizard' />
+      <TopBarWithLogo title='Team Creator Wizard'/>
       <div className='mstt'>
         <div className="team-creation-container">
           <div className="input-group">

@@ -579,7 +579,9 @@ exports.createComponentInForm = async (req, res) => {
     });
 
   } catch (error) {
+          console.log(error);
     res.status(400).json({
+
       success: false,
       message: "Failed to create component",
       error: error.message

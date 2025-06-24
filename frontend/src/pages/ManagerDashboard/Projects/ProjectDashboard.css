@@ -1,36 +1,36 @@
-.project-dashboard {
+.project-dashboard1 {
 
   padding: 20px;
   font-family: Arial, sans-serif;
 }
-.mst{
+.mst1{
   margin: 5rem;
 }
 
-.project-dashboard h2 {
+.project-dashboard1 h2 {
 
   margin-bottom: 20px;
   text-align: center;
 }
 
-.project-table {
+.project-table1 {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
-.project-table th,
-.project-table td {
+.project-table1 th,
+.project-table1 td {
   border: 1px solid #ccc;
   padding: 8px 12px;
   text-align: center;
 }
 
-.project-table th {
+.project-table1 th {
   background-color: #f5f5f5;
 }
 
-.view-btn {
+.view-btn1 {
   padding: 6px 12px;
   background-color: #007bff;
   color: white;
@@ -39,12 +39,12 @@
   cursor: pointer;
 }
 
-.view-btn:hover {
+.view-btn1:hover {
   background-color: #0056b3;
 }
 
 /* Modal styles */
-.modal-overlay {
+.modal-overlay1 {
   position: fixed;
   top: 0;
   left: 0;
@@ -57,7 +57,7 @@
   z-index: 999;
 }
 
-.modal-content {
+.modal-content1 {
   background: white;
   padding: 20px;
   width: 90%;
@@ -66,39 +66,39 @@
   position: relative;
 }
 
-.modal-content h3 {
+.modal-content1 h3 {
   margin-top: 0;
   text-align: center;
 }
 
-.component-table {
+.component-table1 {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
-.component-table th,
-.component-table td {
+.component-table1 th,
+.component-table1 td {
   border: 1px solid #ccc;
   padding: 8px 12px;
   text-align: center;
 }
 
-.component-table th {
+.component-table1 th {
   background-color: #f0f0f0;
 }
 
-.modal-actions {
+.modal-actions1 {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
 }
 
-.close-btn,
-.accept-btn,
-.reject-btn,
-.confirm-reject-btn {
+.close-btn1,
+.accept-btn1,
+.reject-btn1,
+.confirm-reject-btn1 {
   padding: 8px 16px;
   color: white;
   border: none;
@@ -106,38 +106,38 @@
   cursor: pointer;
 }
 
-.close-btn {
+.close-btn1 {
   background-color: #6c757d;
 }
 
-.close-btn:hover {
+.close-btn1:hover {
   background-color: #5a6268;
 }
 
-.accept-btn {
+.accept-btn1 {
   background-color: #28a745;
 }
 
-.accept-btn:hover {
+.accept-btn1:hover {
   background-color: #218838;
 }
 
-.reject-btn {
+.reject-btn1 {
   background-color: #dc3545;
 }
 
-.reject-btn:hover {
+.reject-btn1:hover {
   background-color: #c82333;
 }
 
-.remark-section {
+.remark-section1 {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.remark-section textarea {
+.remark-section1 textarea {
   width: 100%;
   min-height: 80px;
   padding: 10px;
@@ -146,24 +146,24 @@
   border-radius: 6px;
   font-family: Arial, sans-serif;
 }
-.component-table th:first-child {
+.component-table1 th:first-child {
   width: 40px;
   text-align: center;
 }
-.controls {
+.controls1 {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
 }
 
-.search-input {
+.search-input1 {
   width: 60%; /* Previously 60% */
   padding: 0.5rem;
   font-size: 1rem;
 }
 
-.filter-select {
+.filter-select1 {
   width: 5%; /* Previously default/small */
   padding: 0.5rem;
   font-size: 1rem;

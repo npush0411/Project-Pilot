@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import './Dashboard.css';
+import './MyProjects.css';
 import STATUS_MAP from '../statusMap';
-import NoDataFound from '../../components/NoDataFound'; // Adjust the path based on your project structure
-
+import TopBarWithLogo from './TopBarWithLogo'
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const ITEMS_PER_PAGE = 3;
 
-function Dashboard() {
+function MyProjects() {
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedComponents, setSelectedComponents] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -27,9 +28,8 @@ function Dashboard() {
         if (!response.ok) throw new Error('Failed to fetch projects');
 
         const data = await response.json();
-
-        const incompleteProjects = data.filter(project => !project.isCompleted);
-        setProjects(incompleteProjects);
+        setProjects(data);
+        setFilteredProjects(data);
       } catch (error) {
         console.error('Error fetching projects:', error);
       } finally {
@@ -40,9 +40,19 @@ function Dashboard() {
     fetchProjects();
   }, []);
 
-  const totalPages = Math.ceil(projects.length / ITEMS_PER_PAGE);
+  useEffect(() => {
+    const filtered = projects.filter(
+      (project) =>
+        project.ID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProjects(filtered);
+    setCurrentPage(1); // Reset to first page when searching
+  }, [searchTerm, projects]);
+
+  const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentProjects = projects.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentProjects = filteredProjects.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
   const handleNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
@@ -56,11 +66,23 @@ function Dashboard() {
     ));
 
   return (
-    <div className="dashboard">
+    <div>
+      <TopBarWithLogo title='My Projects'/>
+      <div className="my-projects">
+      {/* <h2></h2> */}
+      
+      <input
+        type="text"
+        className="search-input"
+        placeholder="Search by Project ID or Title..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
       {loading ? (
         <p>Loading...</p>
-      ) : projects.length === 0 ? (
-        <NoDataFound message="You have no ongoing/incomplete projects." />
+      ) : filteredProjects.length === 0 ? (
+        <p>No projects found.</p>
       ) : (
         <>
           <table className="project-table">
@@ -77,7 +99,8 @@ function Dashboard() {
               {currentProjects.map((project, index) => (
                 <tr key={project.ID || index}>
                   <td>
-                    <strong>{project.ID}</strong><br />
+                    <strong>{project.ID}</strong>
+                    <br />
                     {project.title}
                   </td>
                   <td>{renderTeamMembers(project?.team?.members || [])}</td>
@@ -107,7 +130,9 @@ function Dashboard() {
           {totalPages > 1 && (
             <div className="pagination-controls">
               <button onClick={handlePrev} disabled={currentPage === 1}>{'<'}</button>
-              <span>{currentPage} / {totalPages}</span>
+              <span>
+                {currentPage} / {totalPages}
+              </span>
               <button onClick={handleNext} disabled={currentPage === totalPages}>{'>'}</button>
             </div>
           )}
@@ -142,12 +167,16 @@ function Dashboard() {
                 ))}
               </tbody>
             </table>
-            <button className="close-btn" onClick={() => setSelectedComponents(null)}>Close</button>
+            <button className="close-btn" onClick={() => setSelectedComponents(null)}>
+              Close
+            </button>
           </div>
         </div>
       )}
+
     </div>
+  </div>
   );
 }
 
-export default Dashboard;
+export default MyProjects;

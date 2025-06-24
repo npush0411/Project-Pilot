@@ -3,7 +3,9 @@ import axios from 'axios';
 import './AssignSlots.css';
 import { useNavigate } from 'react-router-dom';
 import ProjectPopup from './ProjectPopup';
-import TopbarWithLogo from '../TopBarWithLogo'
+import TopbarWithLogo from '../TopBarWithLogo';
+import NoDataFound from '../../../components/NoDataFound'; // ✅ Import here
+
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const AssignSlots = () => {
@@ -21,7 +23,7 @@ const AssignSlots = () => {
   const token = localStorage.getItem('token');
 
   const slotOptions = [
-    { value: -1, time: 'ANY' }, // NEW ANY SLOT
+    { value: -1, time: 'ANY' },
     { value: 1, time: '11:00 - 12:00' },
     { value: 2, time: '13:00 - 14:00' },
     { value: 3, time: '14:00 - 15:00' },
@@ -91,11 +93,16 @@ const AssignSlots = () => {
     }
   };
 
+  const filteredProjects = projects.filter((proj) => {
+    if (batchFilter === 'all') return true;
+    if (batchFilter === 'null') return proj.batch === null || proj.batch === undefined;
+    return proj.batch === batchFilter;
+  });
+
   return (
     <div className="assign-container">
-      {/* <h2>Assign Projects to Slot</h2> */}
-      <TopbarWithLogo title='Slot Assignment Master'/>
-      <div className='masst'>
+      <TopbarWithLogo title="Slot Assignment Master" />
+      <div className="masst">
         <div className="input-group">
           <label>Select Date:</label>
           <input
@@ -149,26 +156,23 @@ const AssignSlots = () => {
 
         <div className="project-table">
           <h3>Live Projects</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Select</th>
-                <th>Project ID</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Guide</th>
-                <th>Batch</th>
-                <th>View</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects
-                .filter((proj) => {
-                  if (batchFilter === 'all') return true;
-                  if (batchFilter === 'null') return proj.batch === null || proj.batch === undefined;
-                  return proj.batch === batchFilter;
-                })
-                .map((proj) => (
+          {filteredProjects.length === 0 ? (
+            <NoDataFound message="No live projects available for this filter." />
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Select</th>
+                  <th>Project ID</th>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Guide</th>
+                  <th>Batch</th>
+                  <th>View</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProjects.map((proj) => (
                   <tr key={proj._id}>
                     <td>
                       <input
@@ -192,8 +196,9 @@ const AssignSlots = () => {
                     </td>
                   </tr>
                 ))}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          )}
         </div>
 
         {selectedProjects.length > 0 && (

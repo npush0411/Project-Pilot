@@ -27,12 +27,12 @@ const teamSchema = new mongoose.Schema({
         type: String,
         enum: ['Lead', 'Member'],
         default: 'Member'
-      },
-      batch:{
-        type:Number
       }
     }
-  ]
+  ],
+  batch:{
+        type:Number
+      }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Team', teamSchema);

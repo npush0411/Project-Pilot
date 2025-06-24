@@ -31,6 +31,10 @@ import AssignSlots from '../pages/ManagerDashboard/Distribution/AssignSlots';
 import Distribute from '../pages/ManagerDashboard/Distribution/Distribute';
 import VerifyDelivery from '../pages/ManagerDashboard/Distribution/VerifyDelivery';
 import ProjectCheckIn from '../pages/ManagerDashboard/Cart/ProjectCheckIn';
+import MyProjects from '../pages/UserDashBoard/MyProjects';
+import MyTeams from '../pages/UserDashBoard/MyTeams';
+import ProjectApprovalManager from '../pages/InstructorDashBoard/ProjectApprovalManager';
+import GuidedProjects from '../pages/InstructorDashBoard/GuidedProjects';
 const AppRoutes = () => (
   <Routes>
     {/* Public Routes */}
@@ -56,11 +60,9 @@ const AppRoutes = () => (
     <Route path="/project-fail" element={<PrivateRoutes><FailurePage /></PrivateRoutes>} />
     <Route path="/project-success" element={<PrivateRoutes><SuccessPage /></PrivateRoutes>} />
 
-    {/* Protected Routes - Manager Controls */}
-    {/* <Route path="/man-controls" element={<PrivateRoutes><ManControls /></PrivateRoutes>} /> */}
-
     {/* Instructor Routes */}
-
+    <Route path='/projects-to-approve' element={<PrivateRoutes><ProjectApprovalManager/></PrivateRoutes>}/>
+    <Route path='/projects-under-me' element={<PrivateRoutes><GuidedProjects/></PrivateRoutes>}/>
     {/*Managet Routes */}
     <Route path='/search-components' element={<PrivateRoutes><Inventory/></PrivateRoutes>}/>
     <Route path='/get-order' element={<PrivateRoutes><RequirementManager/></PrivateRoutes>}/>
@@ -73,6 +75,8 @@ const AppRoutes = () => (
     <Route path='/check-out' element={<PrivateRoutes><Distribute/></PrivateRoutes>}/>
     <Route path="/student/acknowledgement/:projectID/:token" element={<VerifyDelivery />} />
     <Route path='/project-in' element={<PrivateRoutes><ProjectCheckIn/></PrivateRoutes>}/>
+    <Route path='/my-projects' element={<PrivateRoutes><MyProjects/></PrivateRoutes>}/>
+    <Route path='/my-teams' element={<PrivateRoutes><MyTeams/></PrivateRoutes>}/>
     <Route path="*" element={<UnderConstruction />} />
   </Routes>
 );

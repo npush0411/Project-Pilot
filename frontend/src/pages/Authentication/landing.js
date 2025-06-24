@@ -24,9 +24,7 @@ function Landing() {
       });
 
       const data = await res.json();
-      // console.log(data);
       if (res.ok) {
-        console.log(data);
         localStorage.setItem('token', data.token);
         const tokenParam = `?token=${encodeURIComponent(data.token)}`;
         localStorage.setItem('user', JSON.stringify(data.user));
@@ -58,7 +56,7 @@ function Landing() {
     <div className='pr'>
       <div className='top'>
         <img className='logo1' src={logo} alt='logo' />
-        <h1>Walchand College of Engineering, Sangli</h1>
+        <h1>DKTE, Sangli</h1>
         <h2>Department Of Electronics Engineering</h2>
         <h3>Project Management Tool</h3>
       </div>
@@ -82,6 +80,12 @@ function Landing() {
               required
             />
           </div>
+
+          {/* Forgot Password Link */}
+          <div className='forgot-password'>
+            <a href='/forgot-password'>Forgot Password?</a>
+          </div>
+
           <input type='submit' value='Login' />
         </form>
       </div>

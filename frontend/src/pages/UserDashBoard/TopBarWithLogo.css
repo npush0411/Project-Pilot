@@ -22,6 +22,7 @@
 
 .topbar-logo {
   height: 40px;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
 }
 
 .topbar-title {
@@ -69,14 +70,14 @@
   width: 100%;
   font-size: 0.95rem;
   cursor: pointer;
-  color: #c4c4c4;
+  color: #2e0d6e;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .dropdown-content1 button:hover {
-  background-color: #828282;
+  background-color: #f0f0f0;
 }
 
 .icon1 {
@@ -140,3 +141,4 @@
     font-size: 0.95rem;
   }
 }
+

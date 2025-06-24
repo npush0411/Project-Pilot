@@ -68,7 +68,8 @@ exports.createProject = async (req, res) => {
     }
 
     const lead = teamDoc.members.find(member => member.role === 'Lead');
-    
+    const leadUser = await User.findOne({userID:lead.userID});
+
     // Step 8: Create Project
     const newProject = new Project({
       title,
@@ -78,7 +79,7 @@ exports.createProject = async (req, res) => {
       components,
       teamID:teamDoc._id, 
       guideID:guideDoc._id,
-      batch:lead.batch
+      batch:leadUser.batch
     });
 
 
@@ -333,3 +334,20 @@ exports.projectReturn = async (req, res) => {
     });
   }
 }
+
+exports.getGuidedProjects = async (req, res) => {
+  try{
+    const userId = req.user.userId;
+    const projects = await Project.find({guideID:userId});
+    return res.status(200).json({
+      success:true,
+      projects
+    });
+  }catch(error){
+    console.log(error);
+    return res.status(501).json({
+      success:false,
+      message:"Internal Server Error !!"
+    })
+  }
+} 
