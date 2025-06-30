@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Distribute.css';
 import TopbarWithLogo from '../TopBarWithLogo';
-import NoDataFound from '../../../components/NoDataFound'; // ✅ Import added
+import NoDataFound from '../../../components/NoDataFound';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -24,6 +24,15 @@ const Distribute = () => {
   const [updatedComponents, setUpdatedComponents] = useState({});
   const [importedProjects, setImportedProjects] = useState([]);
   const [assignStatus, setAssignStatus] = useState(null);
+  const [masterComponents, setMasterComponents] = useState([]);
+
+  useEffect(() => {
+    fetchProjects();
+    fetchUsers();
+    fetchMasterComponents();
+    const interval = setInterval(fetchProjects, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchProjects = async () => {
     try {
@@ -49,12 +58,17 @@ const Distribute = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-    fetchUsers();
-    const interval = setInterval(fetchProjects, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  const fetchMasterComponents = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/get-all-components`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) setMasterComponents(data.data);
+    } catch (err) {
+      console.error("Error fetching master components", err);
+    }
+  };
 
   useEffect(() => {
     const slot = getCurrentISTSlot();
@@ -97,6 +111,14 @@ const Distribute = () => {
       ...prev,
       [name]: { ...prev[name], remark: value }
     }));
+  };
+
+  const getComponentStatus = (name, receivedQuantity) => {
+    const master = masterComponents.find(mc => mc.title.trim().toLowerCase() === name.trim().toLowerCase());
+    if (!master) return 'invalid';
+    if (receivedQuantity === '' || receivedQuantity === null) return 'empty';
+    if (Number(receivedQuantity) <= master.qnty) return 'valid';
+    return 'exceed';
   };
 
   const submitAssign = async () => {
@@ -170,7 +192,7 @@ const Distribute = () => {
         <p><strong>Projects in Current Slot:</strong> {filteredProjects.length}</p>
 
         {importedAndFiltered.length === 0 ? (
-          <NoDataFound message="No projects found for this slot." /> // ✅ Replaced message
+          <NoDataFound message="No projects found for this slot." />
         ) : (
           <div className="project-table-container">
             <table className="project-table">
@@ -252,36 +274,49 @@ const Distribute = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {assigningProject.components.filter(c => c.accepted).map((comp) => (
-                        <tr key={comp._id}>
-                          <td>{comp.id}</td>
-                          <td>{comp.name}</td>
-                          <td>{comp.quantity}</td>
-                          <td>
-                            <input
-                              type="number"
-                              min="0"
-                              max={comp.quantity}
-                              value={updatedComponents[comp.name]?.receivedQantity || ''}
-                              onChange={(e) => handleReceivedQuantityChange(comp.name, e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              placeholder="Remark"
-                              disabled={Number(updatedComponents[comp.name]?.receivedQantity || 0) >= comp.quantity}
-                              value={updatedComponents[comp.name]?.remark || ''}
-                              onChange={(e) => handleRemarkChange(comp.name, e.target.value)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
+                      {assigningProject.components.filter(c => c.accepted).map((comp) => {
+                        const status = getComponentStatus(comp.name, updatedComponents[comp.name]?.receivedQantity);
+                        return (
+                          <tr key={comp._id}>
+                            <td>{comp.id}</td>
+                            <td>{comp.name}</td>
+                            <td>{comp.quantity}</td>
+                            <td>
+                              <input
+                                type="number"
+                                min="0"
+                                max={comp.quantity}
+                                className={`quantity-input ${status}`}
+                                value={updatedComponents[comp.name]?.receivedQantity || ''}
+                                onChange={(e) => handleReceivedQuantityChange(comp.name, e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                placeholder="Remark"
+                                value={updatedComponents[comp.name]?.remark || ''}
+                                onChange={(e) => handleRemarkChange(comp.name, e.target.value)}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
 
                   <div className="popup-actions">
-                    <button className="accept-btn" onClick={submitAssign}>Assign</button>
+                    <button
+                      className="accept-btn"
+                      onClick={submitAssign}
+                      disabled={
+                        Object.entries(updatedComponents).some(([name, val]) =>
+                          getComponentStatus(name, val.receivedQantity) !== 'valid'
+                        )
+                      }
+                    >
+                      Assign
+                    </button>
                     <button className="close-btn" onClick={() => setAssigningProject(null)}>Close</button>
                   </div>
                 </>

@@ -135,5 +135,30 @@
       font-size: 12px;
     }
   }
-  
-  
+.otp-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.otp-box {
+  width: 45px;
+  height: 50px;
+  font-size: 24px;
+  text-align: center;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.otp-box:focus {
+  border-color: #007BFF;
+  outline: none;
+  background-color: #f0f8ff;
+}
+.otp-success-msg {
+  color: green;
+  font-weight: 500;
+  margin-bottom: 10px;
+}

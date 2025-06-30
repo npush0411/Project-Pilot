@@ -1,14 +1,14 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Login from '../pages/Authentication/Login';
-import SignUp from '../pages/SignUp';
-import AdminDashboard from '../pages/AdminDashboard';
+import SignUp from '../pages/Authentication/SignUp';
+import AdminDashboard from '../pages/AdminDashboard/AdminDashboard';
 import StudentDashboard from '../pages/UserDashBoard/StudentDashboard';
 import ManagerDashboard from '../pages/ManagerDashboard/ManagerDashboard';
 import InstructorDashboard from '../pages/InstructorDashBoard/InstructorDashboard';
 import LoginFailed from '../pages/Authentication/LogFail';
-import SignSuc from '../pages/signSuc';
-import SignFail from '../pages/signFail';
+import SignSuc from '../pages/Authentication/signSuc';
+import SignFail from '../pages/Authentication/signFail';
 import CheckInLand from '../pages/ManagerDashboard/Cart/CheckInLand';
 import PageNotFound from '../pages/PageNotFound';
 import UnderConstruction from '../pages/UnderConstruction';
@@ -35,6 +35,8 @@ import MyProjects from '../pages/UserDashBoard/MyProjects';
 import MyTeams from '../pages/UserDashBoard/MyTeams';
 import ProjectApprovalManager from '../pages/InstructorDashBoard/ProjectApprovalManager';
 import GuidedProjects from '../pages/InstructorDashBoard/GuidedProjects';
+import ForgotPassword from '../pages/Authentication/ForgotPassword';
+import ResetPassword from '../pages/Authentication/ResetPassword';
 const AppRoutes = () => (
   <Routes>
     {/* Public Routes */}
@@ -43,7 +45,9 @@ const AppRoutes = () => (
     <Route path="/log-fail" element={<LoginFailed />} />
     <Route path="/sign-suc" element={<SignSuc />} />
     <Route path="/sign-fail" element={<SignFail />} />
-
+    <Route path="/auth/forgot-pass" element={<ForgotPassword/>}/>
+    <Route path='/auth/reset-password' element={<ResetPassword/>}/>
+    
     {/* Protected Routes - Dashboards */}
     <Route path="/admin-dashboard" element={<PrivateRoutes><AdminDashboard /></PrivateRoutes>} />
     <Route path="/student-dashboard" element={<PrivateRoutes><StudentDashboard /></PrivateRoutes>} />

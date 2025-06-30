@@ -201,7 +201,7 @@ const ViewCarts = () => {
     }
   };
 
-  if (loading) return <div className="view-carts-container11">Loading...</div>;
+  if (loading) return <div className="loader"></div>;
   if (error) return <div className="view-carts-container11 error11">{error}</div>;
 
   return (

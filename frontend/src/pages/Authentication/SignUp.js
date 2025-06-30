@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import logo from '../images/logo.png';
-import './css/signup.css';
+import logo from '../../images/logo.png';
+import './signup.css';
 import { useNavigate } from 'react-router-dom';
 
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+ 
 function SignUp() {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
@@ -20,9 +22,12 @@ function SignUp() {
     batch: '',
     passingYear: '',
     academicYear: '',
+    otp: ''
   });
 
   const [error, setError] = useState('');
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,11 +48,35 @@ function SignUp() {
     }
   };
 
+  const handleSendOTP = async () => {
+    if (!formData.email) {
+      setError("Please enter your email first.");
+      return;
+    }
+    console.log(BASE_URL);
+    try {
+      const res = await fetch(`${BASE_URL}/auth/sendotp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setOtpSent(true);
+        setShowOtpInput(true);
+        setError('');
+      } else {
+        setError(result.message || "Failed to send OTP.");
+      }
+    } catch (err) {
+      setError("Something went wrong while sending OTP.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(formData);
-      const response = await fetch('http://localhost:4000/api/v1/signup', {
+      const response = await fetch(`${BASE_URL}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -75,14 +104,13 @@ function SignUp() {
       </header>
 
       <form className='signup-form' onSubmit={handleSubmit}>
-        {[
-          { label: 'First Name', name: 'firstName', type: 'text' },
+        {[{ label: 'First Name', name: 'firstName', type: 'text' },
           { label: 'Last Name', name: 'lastName', type: 'text' },
           { label: 'User ID', name: 'userID', type: 'number' },
           { label: 'Contact Number', name: 'contactNumber', type: 'text' },
           { label: 'Email', name: 'email', type: 'email' },
           { label: 'Password', name: 'password', type: 'password' },
-          { label: 'Confirm Password', name: 'cPassword', type: 'password' },
+          { label: 'Confirm Password', name: 'cPassword', type: 'password' }
         ].map((field) => (
           <div className='form-group' key={field.name}>
             <label>{field.label}:</label>
@@ -141,8 +169,35 @@ function SignUp() {
           </>
         )}
 
+        {showOtpInput && (
+  <>
+    <p className='otp-success-msg'>OTP sent successfully! Please check your email.</p>
+    <div className='form-group'>
+      <label>Enter OTP:</label>
+      <input
+        type='text'
+        name='otp'
+        maxLength='6'
+        value={formData.otp}
+        onChange={handleChange}
+        className='otp-input-box'
+        placeholder='6-character OTP'
+        required
+      />
+    </div>
+  </>
+)}
+
+
         {error && <p className='error-text'>{error}</p>}
-        <input type='submit' value='Sign Up' className='signup-button' />
+
+        {!otpSent ? (
+          <button type='button' className='signup-button' onClick={handleSendOTP}>
+            Verify Email
+          </button>
+        ) : (
+          <input type='submit' value='Verify & Register' className='signup-button' />
+        )}
       </form>
 
       <footer className='signup-footer'>

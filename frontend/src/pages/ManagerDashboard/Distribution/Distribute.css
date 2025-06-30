@@ -241,3 +241,33 @@
   background-color: #bbb;
   border-radius: 10px;
 }
+
+.quantity-input {
+  border: 2px solid #ccc;
+  padding: 6px;
+  border-radius: 6px;
+  width: 100px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s, background-color 0.3s;
+}
+
+.quantity-input.valid {
+  border-color: green;
+  background-color: #e6ffe6;
+}
+
+.quantity-input.exceed {
+  border-color: red;
+  background-color: #ffe6e6;
+}
+
+.quantity-input.empty {
+  border-color: orange;
+  background-color: #fff7e6;
+}
+
+.quantity-input.invalid {
+  border-color: grey;
+  background-color: #f0f0f0;
+}

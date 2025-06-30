@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/signfail.css';
-import logo from '../images/logo.png';
+import './signfail.css';
+import logo from '../../images/logo.png';
 
 function SignFail() {
   const navigate = useNavigate();
